@@ -1,10 +1,13 @@
-//! CLI entry point for the sn-fetch PoC.
+//! CLI entry point for the sn-fetch `PoC`.
 //!
 //! KEINE GARANTIE — this software is provided "as is" without warranty of
 //! any kind (AGPL-3.0, sections 15/16). Users are solely responsible for
 //! what they transmit or receive with it.
 
 #![forbid(unsafe_code)]
+#![warn(clippy::pedantic)]
+// PoC scope: doc-annotation noise, not correctness. Revisit at release.
+#![allow(clippy::must_use_candidate, clippy::missing_errors_doc)]
 
 use std::num::{NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize};
 use std::path::PathBuf;
@@ -26,7 +29,7 @@ struct Args {
     output: Option<PathBuf>,
 
     /// Exits as `id=weight` pairs, comma separated, e.g. `local=1,local2=2`.
-    /// PoC: all ids map to plain local connections; the weights only shape
+    /// `PoC`: all ids map to plain local connections; the weights only shape
     /// the plan. Multi-exit routing comes with the mesh integration.
     #[arg(short = 'e', long = "exit", default_value = "local=1")]
     exits: String,
@@ -79,8 +82,7 @@ fn default_output(url: &TargetUrl) -> PathBuf {
     let name = segments
         .next_back()
         .filter(|name| !name.is_empty())
-        .map(str::to_string)
-        .unwrap_or_else(|| "download.bin".to_string());
+        .map_or_else(|| "download.bin".to_string(), str::to_string);
     PathBuf::from(name)
 }
 
@@ -165,18 +167,22 @@ async fn run() -> Result<(), String> {
     println!(
         "time:     {:.2?} s → effective {:.1} MiB/s",
         report.wall_time.as_secs_f64(),
-        report.file_size.value() as f64 / 1024.0 / 1024.0 / report.wall_time.as_secs_f64()
+        bytes_to_mib(report.file_size.value()) / report.wall_time.as_secs_f64()
     );
     println!("segments:");
     for segment in &report.segments {
-        let mib_per_s = segment.bytes as f64
-            / 1024.0
-            / 1024.0
-            / segment.duration.as_secs_f64().max(f64::EPSILON);
+        let mib_per_s =
+            bytes_to_mib(segment.bytes) / segment.duration.as_secs_f64().max(f64::EPSILON);
         println!(
             "  #{}: {} bytes in {:.2?} s ({mib_per_s:.1} MiB/s)",
             segment.index, segment.bytes, segment.duration
         );
     }
     Ok(())
+}
+
+/// Bytes to MiB (display-only; precision loss is irrelevant here).
+#[allow(clippy::cast_precision_loss)]
+fn bytes_to_mib(bytes: u64) -> f64 {
+    bytes as f64 / (1024.0 * 1024.0)
 }

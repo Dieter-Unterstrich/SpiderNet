@@ -2,6 +2,9 @@
 //! optional range handling (configurable), `Connection: close` semantics.
 
 #![forbid(unsafe_code)]
+// Tests are allowed to unwrap/expect; production code denies them via
+// workspace lints (server/Cargo.toml).
+#![allow(clippy::unwrap_used, clippy::expect_used)]
 
 use std::io::{BufRead, BufReader, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};

@@ -57,8 +57,7 @@ impl FetchPlan {
                 .iter()
                 .enumerate()
                 .min_by_key(|(_, (id, weight))| (weight.value(), std::cmp::Reverse(id.value())))
-                .map(|(pos, _)| pos)
-                .unwrap_or(0);
+                .map_or(0, |(pos, _)| pos);
             exits.remove(weakest);
         }
         // Deterministic boundary assignment order.
@@ -120,15 +119,11 @@ impl FetchPlan {
             // The last exit covers to the end, so nothing can be left
             // over; stay honest and extend the last assignment anyway.
             if start < file_size.value() {
-                match assignments.last_mut() {
-                    Some((last_range, _)) => {
-                        *last_range =
-                            ByteRange::try_new(last_range.start(), file_size.value() - 1)?;
-                    }
-                    None => {
-                        let only = ByteRange::try_new(0, file_size.value() - 1)?;
-                        assignments.push((only, exits[0].0));
-                    }
+                if let Some((last_range, _)) = assignments.last_mut() {
+                    *last_range = ByteRange::try_new(last_range.start(), file_size.value() - 1)?;
+                } else {
+                    let only = ByteRange::try_new(0, file_size.value() - 1)?;
+                    assignments.push((only, exits[0].0));
                 }
             }
         }
@@ -212,7 +207,7 @@ fn even_subsplit(start: u64, end_inclusive: u64, parts: usize) -> Vec<ByteRange>
     let mut out = Vec::with_capacity(parts);
     let mut cursor = start;
     for i in 0..parts {
-        let len = base + if (i as u64) < remainder { 1 } else { 0 };
+        let len = base + u64::from((i as u64) < remainder);
         let range_end = cursor + len - 1;
         match ByteRange::try_new(cursor, range_end) {
             Ok(range) => out.push(range),
@@ -243,36 +238,31 @@ fn merge_tiny_segments(
         let merged: (ByteRange, ExitId) = if pos + 1 < assignments.len() {
             // Merge into the next segment, keeping its exit.
             let next = &assignments[pos + 1];
-            let range = match ByteRange::try_new(assignments[pos].0.start(), next.0.end_inclusive())
-            {
-                Ok(range) => range,
+            let Ok(range) = ByteRange::try_new(assignments[pos].0.start(), next.0.end_inclusive())
+            else {
                 // Unreachable: next.start == pos.end + 1, so the merged
-                // range is always well-formed. Drop both segments instead
-                // of panicking; validate() would reject a broken plan.
-                Err(_) => break,
+                // range is always well-formed. Stop instead of panicking;
+                // validate() would reject a broken plan.
+                break;
             };
             (range, next.1)
         } else {
             // Last segment is too small: merge into the previous one.
             let prev_pos = pos - 1;
             let prev = &assignments[prev_pos];
-            let range = match ByteRange::try_new(prev.0.start(), assignments[pos].0.end_inclusive())
-            {
-                Ok(range) => range,
-                Err(_) => break,
+            let Ok(range) = ByteRange::try_new(prev.0.start(), assignments[pos].0.end_inclusive())
+            else {
+                break;
             };
             (range, prev.1)
         };
 
-        match pos + 1 < assignments.len() {
-            true => {
-                assignments[pos + 1] = merged;
-                assignments.remove(pos);
-            }
-            false => {
-                assignments[pos - 1] = merged;
-                assignments.remove(pos);
-            }
+        if pos + 1 < assignments.len() {
+            assignments[pos + 1] = merged;
+            assignments.remove(pos);
+        } else {
+            assignments[pos - 1] = merged;
+            assignments.remove(pos);
         }
     }
     assignments

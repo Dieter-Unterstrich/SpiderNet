@@ -7,6 +7,16 @@ version = "0.1.0"
 edition = "2021"
 license = "AGPL-3.0-only"
 
+[workspace.lints.rust]
+unsafe_code = "deny" # also #![forbid(unsafe_code)] in every crate root
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unreachable = "deny"
+
 [workspace.dependencies]
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }

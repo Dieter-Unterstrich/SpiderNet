@@ -1,7 +1,7 @@
 //! Exit abstraction: an "exit" is one internet uplink through which
 //! segment requests can be sent.
 //!
-//! PoC v0 ships only [`LocalExit`] (the household's own connection, no
+//! `PoC` v0 ships only [`LocalExit`] (the household's own connection, no
 //! detour). The registry/trait structure is deliberately ready so a
 //! future exit implementation can route HTTP through a neighbour over
 //! the mesh (e.g. via a per-exit proxy or tunnel) without changing the

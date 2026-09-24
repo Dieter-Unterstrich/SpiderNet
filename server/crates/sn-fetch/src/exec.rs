@@ -145,7 +145,7 @@ pub async fn assemble(
 
     for part_path in &part_paths {
         let mut part = tokio::fs::File::open(part_path).await?;
-        let mut buffer = [0u8; 64 * 1024];
+        let mut buffer = vec![0u8; 64 * 1024];
         loop {
             let n = tokio::io::AsyncReadExt::read(&mut part, &mut buffer).await?;
             if n == 0 {

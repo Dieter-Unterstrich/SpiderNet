@@ -86,6 +86,19 @@ Kleinster brauchbarer Schnitt:
 Der Code soll so sicher sein, dass ganze Fehlerklassen schon beim Kompilieren
 unmöglich werden. Verbindliche Regeln für jede Crate in `server/`:
 
+**Maschinell erzwungen** (Workspace-Lints in `server/Cargo.toml`, in jeder
+Crate via `[lints] workspace = true` aktiviert):
+
+- `unsafe_code = "deny"` + `#![forbid(unsafe_code)]` im Crate-Root
+- `clippy::unwrap_used = "deny"` — kein `unwrap()` (Panic-Quelle, kein Test)
+- `clippy::expect_used = "deny"` — kein `expect()` (Panic-Quelle, kein Test)
+- `clippy::panic = "deny"`, `clippy::unreachable = "deny"`
+- `clippy::all = "deny"`, `clippy::pedantic = "warn"` (Deny-Ziel vor Release)
+
+Verifiziert: ein eingebautes `unwrap()` in `lib.rs` wurde von Clippy mit
+`error: used unwrap() ... #unwrap_used` abgelehnt. Tests dürfen
+`unwrap()`/`expect()` (explizites `#![allow(...)]` pro Test-Crate).
+
 1. **`#![forbid(unsafe_code)]`** in jedem Crate-Root (und `unwrap`,
    `expect` nur in `#[cfg(test)]`-Kontext).
 2. **Newtypes statt roher Primitive** für alles, was Bedeutung hat:

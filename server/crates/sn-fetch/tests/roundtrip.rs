@@ -3,6 +3,9 @@
 //! the fallback path for range-hostile servers.
 
 #![forbid(unsafe_code)]
+// Tests are allowed to unwrap/expect; production code denies them via
+// workspace lints (server/Cargo.toml).
+#![allow(clippy::unwrap_used, clippy::expect_used)]
 
 mod common;
 

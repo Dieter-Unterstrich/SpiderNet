@@ -41,13 +41,15 @@ pub async fn run(
     let info = probe::probe(&probe_client, target).await?;
 
     match info.range_support {
-        RangeSupport::Supported => run_ranged(target, options, exits, parts_dir, info).await,
+        RangeSupport::Supported => {
+            Box::pin(run_ranged(target, options, exits, parts_dir, info)).await
+        }
         RangeSupport::Unsupported | RangeSupport::Unknown => {
             tracing::warn!(
                 "server does not (confirmably) support range requests; \
                  falling back to single-stream download without pooling"
             );
-            run_whole(target, options, exits, parts_dir, info).await
+            Box::pin(run_whole(target, options, exits, parts_dir, info)).await
         }
     }
 }

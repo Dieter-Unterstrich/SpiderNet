@@ -41,21 +41,20 @@ pub async fn probe(client: &reqwest::Client, url: &TargetUrl) -> Result<ProbeInf
         _ => None,
     };
 
-    let range_support = match advertised {
-        Some(support) => support,
+    let range_support = if let Some(support) = advertised {
+        support
+    } else {
         // HEAD was inconclusive: ask directly with a 1-byte range.
-        None => {
-            let resp = client
-                .get(url.inner().clone())
-                .header(reqwest::header::RANGE, "bytes=0-0")
-                .send()
-                .await?;
+        let resp = client
+            .get(url.inner().clone())
+            .header(reqwest::header::RANGE, "bytes=0-0")
+            .send()
+            .await?;
 
-            match resp.status() {
-                StatusCode::PARTIAL_CONTENT => RangeSupport::Supported,
-                StatusCode::OK => RangeSupport::Unsupported,
-                _ => RangeSupport::Unknown,
-            }
+        match resp.status() {
+            StatusCode::PARTIAL_CONTENT => RangeSupport::Supported,
+            StatusCode::OK => RangeSupport::Unsupported,
+            _ => RangeSupport::Unknown,
         }
     };
 
