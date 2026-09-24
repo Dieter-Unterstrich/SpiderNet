@@ -28,9 +28,10 @@ ist — ohne Mehrkosten und mit besserer Versorgung schwacher Haushalte.
 
 ## Status
 
-Konzeptphase. Die Software in `server/` ist noch nicht implementiert; der
-erste Meilenstein ist ein PoC "segmentierter Download über zwei Haushalte"
-(siehe [[Roadmap]]).
+Prototypphase (siehe [Roadmap]): `sn-fetch` (segmentierter Multi-Exit-
+Download mit Retry + Egress) und `sn-node` v0 (Yggdrasil-Config + Status)
+sind implementiert und getestet — Details in [`server/README.md`](../server/README.md).
+Nächster Meilenstein: `sn-exit` + Pilot mit 2–3 Haushalten.
 
 ## Verwandte Projekte (Prior Art)
 
