@@ -21,6 +21,7 @@ Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 | [[Ethos]] | Werte: Gemeingut, Fairness, Leechen erlaubt, legale Basis |
 | [[Idee]] | Kernidee + ehrlicher Realitätscheck |
 | [[Architektur]] | Schichten: Physik → Routing → Pooling → Freenet-Inhalte |
+| [[Overlay]] | Yggdrasil als Overlay: Auswahl, Deployment, Grenzen |
 | [[Recht]] | Deutsche Rechtslage + Pflichtregeln für die Software |
 | [[Splitting]] | Was sich splitten lässt: Ranges, Flow-Verteilung, Realtime |
 | [[Lizenz]] | Lizenz-Optionen (Code & Doku) |
@@ -41,6 +42,8 @@ Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 - [[Recht]] §5 (Pflichtregeln) ↔ [[Server-README]] (Haftungsausschluss)
 - [[Idee]] (Realitätscheck) ↔ [[Architektur]] (link-agnostische Physik, `sn-fetch`)
 - [[Splitting]] ↔ [[Architektur]] (Schicht 2) — was der Exit-Pool tatsächlich nutzen kann
+- [[Overlay]] ↔ [[Architektur]] (Schicht 1) — Routing-Entscheidung und deren Grenzen
+- [[Overlay]] ↔ [[Server-README]] — `sn-node` generiert die Yggdrasil-Config, `sn-fetch` nutzt `Egress::Proxy`
 - [[Lizenz]] ↔ [[Ethos]] §6 (Transparenz) und `freenet-core` (AGPL)
 
 ## Außerhalb der Doku

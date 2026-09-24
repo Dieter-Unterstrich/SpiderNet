@@ -18,8 +18,14 @@ Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
 - [x] `sn-fetch` PoC (lokal): Range-Probe, gewichteter Planner, parallele
       Segment-Downloads, Reassembly + SHA-256 — verifiziert gegen einen
       echten Server (Debian-Mirror); Multi-Exit-Routing folgt mit dem Mesh
-- [ ] SpiderNet-Node auf Mini-PC (Raspberry Pi / N100-Box), Yggdrasil-Overlay
-      zwischen 2 Haushalten (Kabel oder Kurzstrecke WLAN/60-GHz)
+- [x] `sn-fetch`: Segment-Retry mit Exit-Reassignment, Progress-Sinks,
+      per-Exit-Egress (`Direct`/`Proxy`) — Nachbar-Exit über HTTP-Proxy
+      end-to-end getestet
+- [x] `sn-node` v0: Yggdrasil-Config-Generierung (`genconf`) + Admin-Socket-
+      Client (`status`) — die Overlay-Anbindung beginnt
+- [ ] Yggdrasil-Overlay zwischen 2 Haushalten (Kabel oder Kurzstrecke
+      WLAN/60-GHz), `sn-node`-Daemon orchestriert den Node
+- [ ] `sn-exit` v0: HTTP-Proxy auf der Yggdrasil-Adresse (Kontingente)
 - [ ] `sn-fetch` PoC über 2 echte Exits, plus Baseline-Messung
       (1-Exit vs. 2-Exit, gleiche Datei)
 - [ ] Fair-Share-Scheduler v0: zwei gleichzeitige Downloads, faire Aufteilung
@@ -29,8 +35,8 @@ Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
 
 Ziel: ein Paket, das 3–10 Haushalte installieren können.
 
-- [ ] `sn-node` Daemon: Discovery, Peering, Metriken (per-Exit Bandbreite/
-      Latenz), Onboarding-Flow (QR/Knopfdruck)
+- [ ] `sn-node` Daemon v1: Metriken aus Yggdrasil-Peering (per-Exit
+      Bandbreite/Latenz), Onboarding-Flow (QR/Knopfdruck)
 - [ ] Exit-Pool: Kontingente, opt-in/opt-out, Leech-Modus, Kill-Switch
 - [ ] `sn-fetch`: API + CLI + einfache Browser-Integration
 - [ ] `sn-cache`: lancache-artiger transparenter Cache (DNS-basiert)

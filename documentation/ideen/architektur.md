@@ -53,7 +53,8 @@ mehr Pooling-Gewinn.
 
 ## Schicht 1 — Routing (Overlay über alle Haushalte)
 
-Kandidaten (Auswahl offen, Kriterium: simpel, wartbar, verschlüsselt):
+Auswahl, Deployment und Grenzen stehen in [[Overlay]] — kurz: **Yggdrasil
+ist gewählt** (erste Wahl, bewusst austauschbar gehalten):
 
 | Kandidat | Pro | Con |
 |---|---|---|

@@ -12,17 +12,39 @@ macht. Sprache: **Rust**.
   Exit, Mindest-Segmentgröße mit Merge-Fix, validated: lückenlose,
   vollständige Abdeckung)
 - Parallele Segment-Downloads (Streaming, eigener reqwest-Client pro Exit)
+- **Retry mit Exit-Reassignment:** fehlgeschlagene Segmente werden (wieder-
+  holbar, Standard 3 Versuche) bevorzugt auf einem anderen Exit wiederholt;
+  nicht-retrybare Fehler (4xx, korrupte Parts) brechen sofort ab — ein
+  halbfertiges File wird nie als Erfolg ausgegeben
+- **Progress:** `ProgressSink`-Events (Segment started/finished/failed,
+  `BytesTracker`) + `tracing`-Logging
+- **Per-Exit-Egress:** `Direct` (eigener Uplink) oder `Proxy` (HTTP-Proxy
+  eines Nachbarn — der Weg für `sn-exit` über das Overlay); end-to-end
+  getestet gegen einen echten Forward-Proxy
 - Reassembly in Index-Reihenfolge + Streaming-SHA-256 + Längen-Check
 - Fallback: range-hostile Server werden als single-stream geladen
-- CLI: `sn-fetch <url> [-o out] [-e "1=2,2=1"] [-s n] [--sha256 hex] --probe-only`
+- CLI: `sn-fetch <url> [-o out] [-e "1=2,2=1@http://[ygg]:8080"] [-s n]
+  [--max-attempts n] [--sha256 hex] --probe-only`
 
 Verifiziert gegen einen echten Server (Debian-CD-Mirror, 756 MB, 8 Segmente,
 SHA-256 entspricht der offiziellen `SHA256SUMS`).
 
-**Noch nicht drin:** Multi-Exit-Routing über das Mesh (aktuell laufen alle
-Exits als lokale Verbindungen — die Struktur [`HttpExit`]-Trait,
-Exit-Registry] ist dafür schon bereit), Retry bei Segment-Fehlern,
-Progress-Anzeige während des Laufs.
+**`sn-node` v0 ist implementiert** (siehe `crates/sn-node/`):
+
+- `sn-node genconf`: erzeugt eine Yggdrasil-Config aus validierten
+  Einstellungen — Basis ist immer der echte `yggdrasil -genconf -json`
+  Output (keine hartcodierten Defaults), gepatcht mit `Peers`, `Listen`,
+  `MulticastInterfaces`, `AdminListen`, `AllowedPublicKeys` (Nachbarschafts-
+  ACL), `IfName`, `PrivateKeyPath`; Output-Datei wird auf 600 gesetzt
+- `sn-node status`: fragt den Admin-Socket ab (`getSelf`/`getPeers` über
+  TCP `localhost:9001` oder Unix-Socket) — Overlay-Adresse, Subnetz,
+  Version, aktive Peer-Verbindungen
+
+**Noch nicht drin:** `sn-exit` (der Proxy-Dienst, der auf der Yggdrasil-
+Adresse lauscht und Segmente für Nachbarn holt), `sn-node`-Daemon (Supervisor,
+der yggdrasil + sn-exit + sn-fetch orchestriert), Fairness-Scheduler.
+
+Details zum Overlay: [[Overlay]].
 
 ## Haftungsausschluss (muss im Produkt sichtbar sein)
 
@@ -52,14 +74,14 @@ Einplatinenrechner), der:
 
 | Crate/Binary | Zweck |
 |---|---|
-| `sn-node` | Daemon: Discovery, Peering, Metriken, Onboarding |
-| `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy für Nachbarn (verschlüsselt) |
+| `sn-node` | Node-Glue: Yggdrasil-Config (`genconf`), Overlay-Status (`status`), später Daemon/Supervisor |
+| `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy auf der Yggdrasil-Adresse (geplant) |
 | `sn-fetch` | Segmentierter Multi-Exit-Downloader (HTTP-API + CLI) |
 | `sn-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma, Leech-Modus) |
 | `sn-cache` | Transparenter Nachbarschafts-Cache (DNS-basiert) |
 | `sn-freenet` | Integration von `freenet-core` (Contracts für Nachbarschafts-Inhalte) |
 
-## MVP (Phase 2 der [[Roadmap]])
+## MVP (Phase 1→2, siehe [[Roadmap]])
 
 Kleinster brauchbarer Schnitt:
 
