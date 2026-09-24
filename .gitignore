@@ -1,0 +1,18 @@
+# Rust
+target/
+**/*.rs.bk
+
+# Node / frontend
+node_modules/
+dist/
+
+# Local config & secrets
+.env
+.env.*
+*.local.toml
+config/*.toml
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
