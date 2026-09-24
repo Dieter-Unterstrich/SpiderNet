@@ -1,0 +1,15 @@
+[package]
+name = "sn-node"
+description = "SpiderNet node helper: Yggdrasil overlay config generation and status queries"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+tokio = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+clap = { workspace = true }
+
+[lints]
+workspace = true
