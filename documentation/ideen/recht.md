@@ -30,14 +30,14 @@
   zu ermöglichen, kann als Teilnehmer/Beihelfer behandelt werden
   (Analogie: BGH zu Tor-Exit-Betreibern mit Vorbelastung).
 
-### Was das für das AKI-Netz bedeutet
+### Was das für das SpiderNet-Netz bedeutet
 
 1. **Exit-Haushalt = Verantwortung bleibt beim Exit-Haushalt.** Wenn
    fremder Traffic über meinen Anschluss ins Internet geht, gilt:
    - Ich muss darlegen können, dass andere Zugang hatten → das Netz
      dokumentiert (lokal, nicht zentral!) die Teilnehmerschaft.
    - Bei Kenntnis einer konkreten Verletzung muss ich handeln können →
-     deshalb braucht der AKI-Node technische Wege, einzelne Nutzer/Segmente
+     deshalb braucht der SpiderNet-Node technische Wege, einzelne Nutzer/Segmente
      zu sperren, ohne das ganze Netz zu killen.
 2. **Kein "Das ist ja verteilt, also legal."** Wer lädt, bleibt Täter —
    unabhängig davon, über welchen Exit. Verteilung ändert die Ermittlungs-

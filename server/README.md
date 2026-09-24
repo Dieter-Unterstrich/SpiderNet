@@ -1,4 +1,4 @@
-# AKI Node — Server/Software (Konzeptphase)
+# SpiderNet-Node — Server/Software (Konzeptphase)
 
 Die Software, die aus "Nachbarschafts-LAN" ein gepooltes Bandbreitennetz
 macht. Sprache: **Rust**. Status: **Konzeptphase — noch nichts implementiert.**
@@ -17,7 +17,8 @@ des Daemons und in der Weboberfläche.
 
 ## Zielbild
 
-Pro Haushalt läuft ein AKI-Node (Mini-PC oder Einplatinenrechner), der:
+Pro Haushalt läuft ein SpiderNet-Node (`sn-node`, Mini-PC oder
+Einplatinenrechner), der:
 
 1. Das Nachbarschafts-Overlay bildet (Yggdrasil als erste Wahl)
 2. Seinen eigenen ISP-Uplink als **Exit** anbietet (opt-in, Kontingent)
@@ -30,14 +31,14 @@ Pro Haushalt läuft ein AKI-Node (Mini-PC oder Einplatinenrechner), der:
 
 | Crate/Binary | Zweck |
 |---|---|
-| `aki-node` | Daemon: Discovery, Peering, Metriken, Onboarding |
-| `aki-exit` | Exit-Dienst: kontingentierter Uplink-Proxy für Nachbarn (verschlüsselt) |
-| `aki-fetch` | Segmentierter Multi-Exit-Downloader (HTTP-API + CLI) |
-| `aki-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma) |
-| `aki-cache` | Transparenter Nachbarschafts-Cache (DNS-basiert) |
-| `aki-freenet` | Integration von `freenet-core` (Contracts für Nachbarschafts-Inhalte) |
+| `sn-node` | Daemon: Discovery, Peering, Metriken, Onboarding |
+| `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy für Nachbarn (verschlüsselt) |
+| `sn-fetch` | Segmentierter Multi-Exit-Downloader (HTTP-API + CLI) |
+| `sn-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma, Leech-Modus) |
+| `sn-cache` | Transparenter Nachbarschafts-Cache (DNS-basiert) |
+| `sn-freenet` | Integration von `freenet-core` (Contracts für Nachbarschafts-Inhalte) |
 
-## MVP (Phase 2 der [Roadmap](../documentation/ideen/roadmap.md))
+## MVP (Phase 2 der [[Roadmap]])
 
 Kleinster brauchbarer Schnitt:
 
@@ -46,8 +47,9 @@ Kleinster brauchbarer Schnitt:
    gesplittet, reassembliert, hash-verifiziert
 3. Fair-Share: zwei gleichzeitige Downloads teilen sich die Gesamt-
    kapazität fair
-4. Exit opt-in per Konfig-Datei; Kill-Switch (Exit aus = Node nutzt nur
-   den eigenen Uplink)
+4. Exit opt-in per Konfig-Datei; Leech-Modus (Sharing aus, nur empfangen)
+   jederzeit umschaltbar; Kill-Switch (Exit aus = Node nutzt nur den
+   eigenen Uplink)
 
 ## Nicht-Ziele (bewusst)
 
@@ -93,5 +95,4 @@ unmöglich werden. Verbindliche Regeln für jede Crate in `server/`:
 - Yggdrasil als Overlay (später evtl. Babel + WireGuard)
 - `freenet-stdlib` / WebSocket-API für Freenet-Integration
 - HTTP Range Requests + SHA-256-Verifizierung für Segmentierung
-- Lizenz: AGPL-3.0 (freenet-core ist AGPL-3.0; Nutzung über stdlib/API
-  erlaubt trotzdem freie Wahl — wir wählen aus Ethos-Gründen AGPL)
+- Lizenz: siehe [[Lizenz]] (Empfehlung: AGPL-3.0)

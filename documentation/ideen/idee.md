@@ -1,4 +1,4 @@
-# Die Kernidee — und ein ehrlicher Realitätscheck
+# Idee — und ein ehrlicher Realitätscheck
 
 ## Ursprungsidee
 
@@ -8,6 +8,11 @@
 > Jede:r nutzt die Gesamtkapazität der Nachbarschaft, ohne dass es mehr
 > kostet. Schwache Haushalte werden gestärkt. Nebenbei wird Traffic verteilt
 > und ist für Außenstehende schwerer zuzuordnen (Privacy).
+
+Wichtiger Punkt (bewusst gehalten): Die Glasfaserverbindungen zwischen den
+Häusern laufen **neben** den normalen ISP-Anschlüssen — das Nachbarschaftsnetz
+ist ein *zweites*, schnelles (Ziel: 10 Gbit/s) lokales Netz, nicht ein Ersatz
+für die Internetanschlüsse.
 
 Diese Idee ist gut — und sie ist nicht abstrakt: NYC Mesh läuft genau so
 ("members share their internet"), Freifunk und guifi.net zeigen es in
@@ -19,9 +24,11 @@ verlassen das Viertel an *allen* Punkten gleichzeitig.
 
 1. **Segmentierte Downloads über mehrere Exits.** Große Dateien werden in
    Byte-Bereiche gesplittet (HTTP Range Requests) und parallel über die
-   Glasfaseranschlüsse mehrerer Haushalte geladen. Das ist Multi-WAN-
-   Aggregation, nur verteilt über das Viertel. Ein DSL-50000-Haushalt kann
-   damit realistisch 5× herunterladen, wenn 4 Nachbarn mitspielen.
+   Internetanschlüsse mehrerer Haushalte geladen. Ein DSL-50000-Haushalt
+   kann damit realistisch 5× herunterladen, wenn 4 Nachbarn mitspielen.
+   Das geht, weil die Haus-zu-Haus-Verbindungen selbst schnell sein
+   sollen (10 Gbit/s) — die Faser im Viertel ist nie der Engpass, die
+   Uplinks sind es.
 2. **Fair-Share-Scheduling.** Wer gerade nichts lädt, gibt seinen Anteil
    automatisch. Ein einzelner Stream profitiert von fremder Kapazität,
    mehrere Lade gleichzeitig bekommen faire Anteile.
@@ -49,22 +56,24 @@ verlassen das Viertel an *allen* Punkten gleichzeitig.
 3. **Physik ist der eigentliche Engpass.** Glasfaser spannen heißt: Genehmigungen,
    Vermieter, Grundstücke, Arbeit. Realistisch beginnt man mit dem, was da
    ist (Kabel im Mehrfamilienhaus, Garten, kurze Richtfunkstrecken), und
-   baut Glasfaser dort, wo ohnehin gegraben wird (siehe Recht).
+   baut Glasfaser dort, wo ohnehin gegraben wird (siehe [[Recht]]).
 4. **Volumen-/Drosseltarife.** Wer ein Volumenlimit hat, zahlt mit Volumen,
    wenn Nachbarn über seinen Exit laden. Lösung: Exits haben harte Kontingente
-   und der Scheduler respektiert sie ("Exit-Karenz"), plus Karma.
+   und der Scheduler respektiert sie ("Exit-Karenz"), plus Karma. Für diese
+   (seltene) Fälle gibt es zusätzlich den **Leech-Modus**: Sharing komplett
+   aus, nur empfangen — unter Nachbarn legitim (siehe [[Ethos]] §2).
 5. **Privacy ist ein Nebenprodukt, keine Anonymität.** Freenet sagt es
    selbst (FAQ): keine Anonymität wie Tor/I2P. Metadaten bleiben. Wer echte
    Anonymität will, legt Tor/I2P über das Netz. Wir verkaufen deshalb
    Privacy-by-Design, nicht Anonymität.
 6. **Recht.** Abmahnungen landen zuerst beim Anschlussinhaber, egal wer
    geladen hat; bewusstes Ermöglichen von Rechtsbrüchen kann eigene Haftung
-   erzeugen. Details und Gegenmaßnahmen: [recht.md](recht.md).
+   erzeugen. Details und Gegenmaßnahmen: [[Recht]].
 
 ## Der technische Kern (warum es Software braucht)
 
 Das Netz ohne Software ist "nur" ein LAN. Die Mehrwerte entstehen durch
-einen **AKI-Node** pro Haushalt, der folgendes macht:
+einen **SpiderNet-Node** pro Haushalt, der folgendes macht:
 
 - Overlay-Routing über alle Haushalte (Kandidat: Yggdrasil)
 - Exit-Pool verwalten: Wer darf über wen raus, mit welchem Kontingent
@@ -73,4 +82,4 @@ einen **AKI-Node** pro Haushalt, der folgendes macht:
 - Transparenten Nachbarschafts-Cache
 - (Später) Freenet als Inhalts- und App-Ebene im Viertel
 
-Siehe [architektur.md](architektur.md) und [server/README.md](../../server/README.md).
+Siehe [[Architektur]] und [[Server-README]].

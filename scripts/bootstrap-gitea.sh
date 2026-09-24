@@ -14,8 +14,8 @@
 set -eu
 
 HOST="git.dieterunterstrich.de"
-REPO_NAME="anarcho-kommunistisches-internet"
-DESCRIPTION="Nachbarschafts-Netz: gepoolte Bandbreite, Gemeingut, Privacy by Design"
+REPO_NAME="spidernet"
+DESCRIPTION="SpiderNet: Nachbarschafts-Netz, gepoolte Bandbreite, Gemeingut, Privacy by Design"
 CRED_FILE="${HOME}/.git-credentials"
 
 command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 required" >&2; exit 1; }

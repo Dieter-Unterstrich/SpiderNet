@@ -1,17 +1,17 @@
-# Dokumentation — Anarcho-Kommunistisches Internet
+# SpiderNet — Dokumentation
 
 Ein Nachbarschaftsnetz aus Glasfaser, in dem sich alle Haushalte ihre
 Internetbandbreite teilen: **vom Internetanschluss zum Gemeingut.**
 
-## Inhaltsverzeichnis
+## Inhaltsverzeichnis (Obsidian-Map of Content)
 
-| Datei | Inhalt |
-|---|---|
-| [ethos.md](ethos.md) | Werte, Prinzipien und "Hausregeln" des Netzes |
-| [ideen/idee.md](ideen/idee.md) | Die Kernidee und ein ehrlicher Realitätscheck |
-| [ideen/architektur.md](ideen/architektur.md) | Technische Architektur (Physik → Routing → Pooling → Inhalt) |
-| [ideen/recht.md](ideen/recht.md) | Rechtslage in Deutschland (Störerhaftung, Abmahnrisiko, Verkabelung) |
-| [ideen/roadmap.md](ideen/roadmap.md) | Phasenplan vom Pilot bis zum Nachbarschafts-Backbone |
+- [[Ethos]] — Werte, Prinzipien und "Hausregeln" des Netzes
+- [[Idee]] — Die Kernidee und ein ehrlicher Realitätscheck
+- [[Architektur]] — Technische Architektur (Physik → Routing → Pooling → Inhalt)
+- [[Recht]] — Rechtslage in Deutschland (Störerhaftung, Abmahnrisiko, Verkabelung)
+- [[Lizenz]] — Lizenz-Optionen und Empfehlung
+- [[Roadmap]] — Phasenplan vom Pilot bis zum Nachbarschafts-Backbone
+- [[Server-README|Server-Konzept]] — geplante Software (`sn-node`, `sn-fetch`, …)
 
 ## Die Idee in einem Satz
 
@@ -24,7 +24,7 @@ ist — ohne Mehrkosten und mit besserer Versorgung schwacher Haushalte.
 
 Konzeptphase. Die Software in `server/` ist noch nicht implementiert; der
 erste Meilenstein ist ein PoC "segmentierter Download über zwei Haushalte"
-(siehe [Roadmap](ideen/roadmap.md)).
+(siehe [[Roadmap]]).
 
 ## Verwandte Projekte (Prior Art)
 

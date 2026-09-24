@@ -15,9 +15,9 @@ endet mit etwas, das man benutzen kann.
 
 Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
 
-- [ ] AKI-Node auf Mini-PC (Raspberry Pi / N100-Box), Yggdrasil-Overlay
-      zwischen 2 Haushalten (Kabel oder kurzstrecke WLAN/60-GHz)
-- [ ] `aki-fetch` PoC: segmentierter Download (HTTP-Range-Splitting) über
+- [ ] SpiderNet-Node auf Mini-PC (Raspberry Pi / N100-Box), Yggdrasil-Overlay
+      zwischen 2 Haushalten (Kabel oder Kurzstrecke WLAN/60-GHz)
+- [ ] `sn-fetch` PoC: segmentierter Download (HTTP-Range-Splitting) über
       2 Exits, plus Baseline-Messung (1-Exit vs. 2-Exit, gleiche Datei)
 - [ ] Fair-Share-Scheduler v0: zwei gleichzeitige Downloads, faire Aufteilung
 - [ ] Doku: Messwerte, Erkenntnisse, Stolpersteine → hier in das Repo
@@ -26,11 +26,11 @@ Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
 
 Ziel: ein Paket, das 3–10 Haushalte installieren können.
 
-- [ ] `aki-node` Daemon: Discovery, Peering, Metriken (per-Exit Bandbreite/
+- [ ] `sn-node` Daemon: Discovery, Peering, Metriken (per-Exit Bandbreite/
       Latenz), Onboarding-Flow (QR/Knopfdruck)
-- [ ] Exit-Pool: Kontingente, opt-in/opt-out, Kill-Switch
-- [ ] `aki-fetch`: API + CLI + einfache Browser-Integration
-- [ ] `aki-cache`: lancache-artiger transparenter Cache (DNS-basiert)
+- [ ] Exit-Pool: Kontingente, opt-in/opt-out, Leech-Modus, Kill-Switch
+- [ ] `sn-fetch`: API + CLI + einfache Browser-Integration
+- [ ] `sn-cache`: lancache-artiger transparenter Cache (DNS-basiert)
 - [ ] Fairness-Scheduler v1 (max-min, Exit-Kontingente, Karma)
 - [ ] Telemetrie: keine zentrale Sammlung; lokale Metriken im Node
 
@@ -53,4 +53,4 @@ Ziel: ein Paket, das 3–10 Haushalte installieren können.
 - [ ] Peering mit Freifunk-Clouds oder anderen Nachbarschaftsnetzen
 - [ ] Echtes Backbone: eigene Glasfaser in Straßen, ggf. IXP-Peering
       (langfristig, NYC-Mesh-Stil)
-- [ ] Federated Viertel: mehrere AKI-Netze verbinden sich
+- [ ] Federated Viertel: mehrere SpiderNet-Netze verbinden sich

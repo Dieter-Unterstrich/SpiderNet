@@ -1,40 +1,47 @@
 # Architektur
 
-Von unten (Physik) nach oben (Inhalte). Der AKI-Node ist das Herzstück —
-eine kleine Box im Wohnungsregal, die zu Hause sitzt und das Viertel verbindet.
+Von unten (Physik) nach oben (Inhalte). Der SpiderNet-Node (`sn-node`) ist
+das Herzstück — eine kleine Box im Wohnungsregal, die zu Hause sitzt und das
+Viertel verbindet.
 
 ## Übersicht
 
 ```mermaid
 flowchart TD
     subgraph HausA[Haus A]
-        GA[Geräte A] --> NA[AKI-Node A]
+        GA[Geräte A] --> NA[sn-node A]
     end
     subgraph HausB[Haus B]
-        GB[Geräte B] --> NB[AKI-Node B]
+        GB[Geräte B] --> NB[sn-node B]
     end
     subgraph HausC[Haus C]
-        GC[Geräte C] --> NC[AKI-Node C]
+        GC[Geräte C] --> NC[sn-node C]
     end
-    NA <-->|"Glasfaser (bzw. Funk-Fallback)"| NB
-    NB <-->|"Glasfaser"| NC
+    NA <-->|"Glasfaser 10 Gbit/s"| NB
+    NB <-->|"Glasfaser 10 Gbit/s"| NC
     NA -->|"ISP-Uplink A"| WA((Internet))
     NB -->|"ISP-Uplink B"| WA
     NC -->|"ISP-Uplink C"| WA
 ```
 
-Entscheidend: **jeder Haushalt behält seinen eigenen Uplink**. Es gibt keinen
-zentralen Exit (anders als klassische Community-Meshes mit einem Supernode),
-sondern viele — das verteilt nicht nur Last, sondern auch Risiko und Zensur-
-Angriffsfläche.
+Entscheidend:
 
-## Schicht 0 — Physik (Nachbarschaftsglasfaser)
+1. **Jeder Haushalt behält seinen eigenen Uplink.** Es gibt keinen zentralen
+   Exit (anders als klassische Community-Meshes mit einem Supernode), sondern
+   viele — das verteilt nicht nur Last, sondern auch Risiko und Zensur-
+   Angriffsfläche.
+2. **Die Glasfaserverbindungen sind ein *zweites* Netz neben den
+   Internetanschlüssen** und sollen schnell sein (10 Gbit/s per SFP+/
+   10G-Optik). Damit ist das Viertelnetz nie der Engpass — der Engpass sind
+   die Uplinks selbst, und genau die werden gepoolt.
 
-- **Bevorzugt:** Glasfaser Haus-zu-Haus (z. B. 2-Faser-Duplex G.657A2, LC-
-  Stecker), Medienwandler bzw. SFP-Port direkt im Node. Innenrohr entlang
-  der Fassade, kurze Gräben im Garten, Kabelkanal.
+## Schicht 0 — Physik (Nachbarschaftsglasfaser, 10 Gbit/s)
+
+- **Ziel:** 10 Gbit/s Haus-zu-Haus. Glasfaser (2-Faser-Duplex G.657A2, LC)
+  mit **10G-Optik (SFP+)** direkt im Node — langfristig günstiger und
+  zukunftssicher; 1G-Medienwandler sind die Budget-Fallback-Option.
 - **Pragmatisch für den Start:** was da ist — existierendes LAN-Kabel im
-  Mehrfamilienhaus (bis 100 m), Richtfunk 60-GHz-PTP (5–15 Gbit/s,
+  Mehrfamilienhaus (bis 100 m), Richtfunk 60-GHz-PTP (mehrere Gbit/s,
   Sichtlinie nötig) als Überbrückung.
 - **Topologie:** anfangs Stern/Ring (2–5 Häuser), später vermascht. Jede
   Faser ist ein separates Link; Redundanz schlägt Eleganz.
@@ -45,13 +52,12 @@ Kandidaten (Auswahl offen, Kriterium: simpel, wartbar, verschlüsselt):
 
 | Kandidat | Pro | Con |
 |---|---|---|
-| **Yggdrasil** | Out-of-the-box e2e-verschlüsseltes IPv6-Overlay, null Konfiguration, self-contained | experimentell, Performance über wenige Gbit/s hinaus |
+| **Yggdrasil** (gewählt) | Out-of-the-box e2e-verschlüsseltes IPv6-Overlay, null Konfiguration, self-contained | experimentell, Performance-Grenzen bei hohen Gbit/s |
 | Babel + WireGuard | bewährt (Althea-Ansatz), Router-Hardware tauglich | mehr Konfigurationsaufwand |
 | cjdns | Battle-tested in Hyperboria | ältere Codebasis |
 
-Empfehlung für den PoC: **Yggdrasil**. Jeder AKI-Node peert über die
-Glasfaser-Links mit seinen Nachbarn; Geräte der Haushalte hängen per NAT/
-Firewall getrennt dahinter (Home-LAN ≠ Mesh-LAN).
+Jeder `sn-node` peert über die Glasfaser-Links mit seinen Nachbarn; Geräte
+der Haushalte hängen per NAT/Firewall getrennt dahinter (Home-LAN ≠ Mesh-LAN).
 
 ## Schicht 2 — Bandbreiten-Pooling (der eigentliche Kern)
 
@@ -74,7 +80,7 @@ Gegenseitigkeitszwang. Technisch gilt:
 - Der Status ist sichtbar (Karma/Anzeige), aber es gibt keine Strafe und
   keine Zwangsfreischaltung.
 
-### Segmentierter Multi-Exit-Download (`aki-fetch`)
+### Segmentierter Multi-Exit-Download (`sn-fetch`)
 
 ```mermaid
 sequenceDiagram
@@ -97,7 +103,7 @@ sequenceDiagram
     Node-->>User: Datei (Hash-verifiziert, reassembliert)
 ```
 
-- HTTP Range Splits + Shadow-Verifizierung (Content-Hash)
+- HTTP Range Splits + Segment-Verifizierung (Content-Hash)
 - Fallback: entfällt ein Exit, übernimmt ein anderer das Segment
 - Für nicht-rangefähige Quellen: klassische Proxy-Rotation
 
@@ -108,17 +114,15 @@ gewählten Exit, Exit-Wahl rotiert; Browsing/Video-Calls laufen über einen
 Exit, große Transfers über alle. Video-Calls werden explizit auf einen
 Exit gepinnt (kein Splitting).
 
-### Fairness-Scheduler (`aki-fair`)
+### Fairness-Scheduler (`sn-fair`)
 
 - Max-min Fairness über alle aktiven Nutzer:innen des Netzes
 - Exit-Kontingente (Volumenlimit, Wartungszeit) werden respektiert
-- Karma statt Bezahlung: wer dauerhaft deutlich mehr zieht als er gibt,
-  wird fair angesprochen (Drosselung als letztes Mittel, nie als Strafe
-  für Berechtigte mit Bedarf)
+- Leech-Nodes: niedrigste Priorität bei Knappheit, nie ausgeschlossen
 
-### Nachbarschafts-Cache (`aki-cache`)
+### Nachbarschafts-Cache (`sn-cache`)
 
-- Transparenter Shared-Cache (lancache-Prinzip): große, popluläre Objekte
+- Transparenter Shared-Cache (lancache-Prinzip): große, populäre Objekte
   (Steam, Konsolen-Updates, OS-Images, Software-Pakete) kommen aus dem
   Viertel statt aus dem Internet
 - DNS-basiert, pro Haushalt kleine Cache-Slots; gemeinsam sind sie groß
@@ -132,7 +136,7 @@ Exit gepinnt (kein Splitting).
 - Freenet ist **keine Anonymitätslösung** (siehe FAQ) und wird auch nicht
   als solche beworben.
 - Unsere Software nutzt Freenet über `freenet-stdlib` bzw. die
-  WebSocket-API (nicht-derivativ), unsere eigene Codebasis bleibt AGPL-3.0.
+  WebSocket-API (nicht-derivativ); die Lizenzwahl steht in [[Lizenz]].
 
 ## Sicherheit und Vertrauen
 
@@ -142,12 +146,12 @@ Exit gepinnt (kein Splitting).
   Teilnehmer (Client-Isolation).
 - Kill-Switch: jeder Haushalt kann seine Faser physisch/softwareseitig
   abklemmen; der Node fällt auf "nur eigener Anschluss" zurück.
-- Minimale Logs (DSGVO, siehe [recht.md](recht.md)).
+- Minimale Logs (DSGVO, siehe [[Recht]]).
 
 ## Offene Fragen
 
 - DSLite/Carrier-NAT-Haushalte: Synchrone Exits gehen, aber
   Konfigurationsaufwand pro Router-Modell prüfen.
 - ISP-AGB: Weitergabe an "Dritte" kann verboten sein (per ISP prüfen,
-  siehe recht.md).
+  siehe [[Recht]]).
 - Wie viel Cache lohnt sich real bei 3–10 Haushalten? (Messung in Phase 2)

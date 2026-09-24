@@ -1,4 +1,4 @@
-# AGENTS.md — Anarcho-Kommunistisches Internet
+# AGENTS.md — SpiderNet
 
 > Arbeitsanweisungen und Ziele für Coding-Agents und Contributor:innen.
 > Lies diese Datei zuerst, bevor du etwas am Projekt änderst.
@@ -46,7 +46,7 @@ Das Projekt besteht aus zwei Hälften:
 
 ## Git / Gitea
 
-- Remote: `https://git.dieterunterstrich.de/<user>/anarcho-kommunistisches-internet.git`
+- Remote: `https://git.dieterunterstrich.de/<user>/spidernet.git`
 - Branch: `main`
 - Credentials liegen im credential-helper `store` — niemals ausgeben oder committen
 - Repo-Setup: `scripts/bootstrap-gitea.sh` (erzeugt das Repo via Gitea-API und pusht)
