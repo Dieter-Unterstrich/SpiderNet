@@ -1,0 +1,13 @@
+[package]
+name = "sn-fair"
+description = "Weighted max-min fairness scheduler for SpiderNet neighborhood networks"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+thiserror = { workspace = true }
+clap = { workspace = true }
+
+[lints]
+workspace = true

@@ -1010,6 +1010,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba467056f1b547ed52077911161fc86985becbc60e8e1857c8a144dab0def891"
 
 [[package]]
+name = "sn-exit"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "sn-fair"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "thiserror",
+]
+
+[[package]]
 name = "sn-fetch"
 version = "0.1.0"
 dependencies = [
@@ -1022,6 +1041,16 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "sn-node"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "thiserror",
+ "tokio",
 ]
 
 [[package]]
