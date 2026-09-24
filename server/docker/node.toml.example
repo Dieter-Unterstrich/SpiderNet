@@ -1,0 +1,95 @@
+# Beispielkonfiguration für den SpiderNet-Node-Daemon (`sn-node daemon`).
+#
+# Vorlage: diese Datei nach `node.toml` kopieren und anpassen. Die
+# Compose-Datei in diesem Ordner bindet `./node.toml` ein.
+#
+# KEINE GARANTIE — SpiderNet wird "as is" ohne jegliche Garantie
+# bereitgestellt (AGPL §§ 15/16). Nutzung auf eigene Verantwortung;
+# die Verantwortung für gesendete und empfangene Inhalte liegt bei den
+# Nutzer:innen.
+#
+# WICHTIG: Die echte node.toml enthält persönliche Daten der Nachbarschaft
+# (Public Keys, Adressen) und später den Node-Private-Key im state_dir.
+# node.toml NIEMALS ins Repository committen.
+
+[node]
+# Admin-Socket des Yggdrasil-Knotens (tcp://host:port oder unix:///pfad).
+# Wird auch als Yggdrasil-AdminListen verwendet, wenn der Daemon das
+# Yggdrasil-Sidecar selbst verwaltet (siehe [yggdrasil].manage).
+admin_endpoint = "tcp://localhost:9001"
+
+# Verzeichnis für den Zustand des Nodes (node.key, generierte
+# yggdrasil.conf). Optional, Standard "spidernet-state" — relativ zum
+# Arbeitsverzeichnis des Daemons. Im Container besser absolut setzen,
+# damit es auf das State-Volume fällt:
+state_dir = "/var/lib/spidernet"
+
+[yggdrasil]
+# true = der Daemon startet und überwacht das Yggdrasil-Sidecar selbst.
+# false = es wird ein bereits laufender Yggdrasil-Daemon verwendet.
+manage = true
+
+# Pfad/Name des Yggdrasil-Binary; nur relevant, wenn manage = true.
+# Im Container ist yggdrasil unter /usr/local/bin/yggdrasil installiert.
+binary = "yggdrasil"
+
+# Peer-URIs (tcp://, tls://, quic://, socks://) für manuelles Peering.
+# Über das Nachbarschafts-LAN peert Yggdrasil per Multicast automatisch;
+# explizite Peers braucht man z. B. über WLAN-Brücken hinweg.
+peers = []
+
+# Listener-URIs für eingehende Peerings (tcp://, tls://, quic://).
+listen = []
+
+# Access-Control: 64-stellige Hex-Public-Keys der Nachbarn, die mit uns
+# peeren dürfen (AllowedPublicKeys). Leere Liste = jeder darf peeren.
+allow_keys = []
+
+# true = Multicast-Auto-Peering im LAN deaktivieren.
+no_multicast = false
+
+# TUN-Interface: "auto" (Standard), "none" (headless, nur Router-Modus)
+# oder ein fester Interface-Name.
+ifname = "auto"
+
+[exit]
+# true = dieser Haushalt stellt seinen Uplink als Exit bereit (opt-in).
+# false = Leech-Modus (Standard hier): der Node empfängt nur, bietet
+# keinen Exit an — ausdrücklich legitim, niemand wird gedrosselt, nur
+# fair priorisiert.
+#
+# Wer Exit anbieten will: enabled = true setzen UND in `allow` die
+# Overlay-Adressen der Nachbarn eintragen — enabled = true mit leerer
+# `allow`-Liste ist ungültig (der Daemon verweigert den Start; Ausnahme:
+# Dev-Modus mit Loopback-bind).
+enabled = false
+
+# Explizite Bind-Adresse. Leer (Standard) = "[<Yggdrasil-Adresse>]:port",
+# d. h. der Exit lauscht auf der eigenen Overlay-Adresse.
+# UNGÜLTIG: allow = [] zusammen mit einem nicht-Loopback-bind — der Exit
+# wäre sonst für beliebig viele Quellen offen (Schutz: ohne Allowlist nur
+# Loopback, das ist der Dev-Modus).
+bind = ""
+
+# TCP-Port des Exit-Dienstes (u16, Standard 8080).
+port = 8080
+
+# Overlay-Adressen der Nachbarn, die diesen Exit nutzen dürfen.
+# Leere Liste = nur Loopback (Dev-Modus); bei nicht-Loopback-bind Pflicht.
+# Beispiel:
+#   allow = ["200:abcd:ef01::2", "200:abcd:ef01::3"]
+allow = []
+
+# Kontingent pro Nachbar: Bytes pro Zeitfenster (u64, Standard 1024 MiB).
+# 0 = unbegrenzt (kein Kontingent).
+quota_mib = 1024
+
+# Länge des Kontingent-Zeitfensters in Stunden (fixed window).
+window_hours = 24
+
+# KILL-SWITCH: Wer nichts mehr teilen will, stoppt einfach den Exit bzw.
+# den Daemon (Container: `docker compose stop`). Damit endet die
+# Bereitstellung des eigenen Uplinks sofort — der eigene Node fällt auf
+# den eigenen Internetanschluss zurück. SpiderNet v0 leitet normalen
+# Verkehr nicht um: nur Downloads, die sn-fetch explizit über das Netz
+# verteilt, nutzen die gepoolte Bandbreite.

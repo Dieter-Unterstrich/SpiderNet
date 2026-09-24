@@ -1,0 +1,9 @@
+# Keep the build context small; everything needed is Cargo.toml,
+# Cargo.lock and crates/ (see server/docker/Dockerfile).
+target/
+.git/
+docker/node.toml.example
+docker/node.toml
+docker/README.md
+docker/docker-compose.yml
+spidernet-state/

@@ -1,0 +1,74 @@
+# SpiderNet node — single-household example (one node per host).
+#
+# NO WARRANTY — SpiderNet is provided "as is" without warranty of any kind
+# (AGPL-3.0, sections 15/16). Running a node is entirely at the operator's
+# own responsibility.
+#
+# The same image serves both roles:
+#   - exit household:  [exit] enabled = true  in node.toml (plus neighbor
+#     addresses in [exit].allow — enabled with an empty allowlist is
+#     rejected by the daemon)
+#   - leech household: [exit] enabled = false in node.toml (the example
+#     config default — safe, receive-only)
+# There is no separate leech image; only the config differs.
+#
+# Quickstart:
+#   cp node.toml.example node.toml   # then edit node.toml
+#   docker compose up --build -d
+
+services:
+  node:
+    build:
+      # Build context is server/, matching the Dockerfile paths.
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: spidernet-node
+    container_name: spidernet-node
+    # Proper PID 1: reaps zombies and makes sure SIGTERM reaches sn-node
+    # so `docker compose stop` behaves as the documented kill switch.
+    init: true
+    # Yggdrasil must bind its TUN interface and peer on the real LAN;
+    # both require the host network stack (no NAT translation).
+    network_mode: host
+    cap_add:
+      # Needed by yggdrasil to create/configure the TUN interface.
+      - NET_ADMIN
+    devices:
+      # The kernel TUN device used for the overlay interface.
+      - /dev/net/tun:/dev/net/tun
+    restart: unless-stopped
+    volumes:
+      # Config is read-only; state (node.key, yggdrasil.conf) goes to a
+      # named volume so the node identity survives container upgrades.
+      - ./node.toml:/etc/spidernet/node.toml:ro
+      - spidernet-state:/var/lib/spidernet
+
+# ---------------------------------------------------------------------------
+# EXIT VARIANT (offering the household's uplink as exit):
+#
+# The example config defaults to leech mode ([exit] enabled = false). To
+# become an exit household set enabled = true in node.toml and add the
+# neighbor overlay addresses to [exit].allow. This compose file works
+# unchanged for both roles (kill switch: `docker compose stop`).
+#
+# If you prefer two service definitions (e.g. to toggle via profiles), note
+# that `network_mode: host` allows only ONE node per host — stop the other
+# service first:
+#
+#   node-leech:
+#     build:
+#       context: ..
+#       dockerfile: docker/Dockerfile
+#     image: spidernet-node
+#     container_name: spidernet-node-leech
+#     init: true
+#     network_mode: host
+#     cap_add: [NET_ADMIN]
+#     devices: ["/dev/net/tun:/dev/net/tun"]
+#     restart: unless-stopped
+#     volumes:
+#       - ./node-leech.toml:/etc/spidernet/node.toml:ro
+#       - spidernet-state-leech:/var/lib/spidernet
+
+volumes:
+  spidernet-state:
