@@ -20,3 +20,6 @@ documentation/.obsidian/
 *.log
 .DS_Store
 Thumbs.db
+
+# Rust build artifacts (workspace root is server/)
+server/target/

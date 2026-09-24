@@ -55,8 +55,10 @@ die Verbindung kaputt machen würde (IP-Wechsel beendet die Session):
 | VPNs (WireGuard etc.) | UDP-Flow mit State |
 
 **Policy-Vorschlag (Default):** realzeitkritischer Traffic geht in den
-**Direct-Modus** — ohne Umweg, normal über den eigenen Router/Uplink, als
-wäre SpiderNet nicht da. Optional "best single exit" (wenn die eigene
+**Direct-Modus** — und zwar als echter **Pass-Through**: SpiderNet gibt
+diese Verbindungen unverändert weiter, sie nehmen den normalen Weg durch
+den eigenen Router und den eigenen Uplink, als wäre SpiderNet nicht da
+(kein Tunnel, kein MITM). Optional "best single exit" (wenn die eigene
 Leitung gestört/überlastet ist, kann man den Call bewusst über einen
 Nachbarschafts-Exit pinnen — aber dann sticky für die Dauer der Session).
 

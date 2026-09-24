@@ -15,10 +15,13 @@ endet mit etwas, das man benutzen kann.
 
 Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
 
+- [x] `sn-fetch` PoC (lokal): Range-Probe, gewichteter Planner, parallele
+      Segment-Downloads, Reassembly + SHA-256 — verifiziert gegen einen
+      echten Server (Debian-Mirror); Multi-Exit-Routing folgt mit dem Mesh
 - [ ] SpiderNet-Node auf Mini-PC (Raspberry Pi / N100-Box), Yggdrasil-Overlay
       zwischen 2 Haushalten (Kabel oder Kurzstrecke WLAN/60-GHz)
-- [ ] `sn-fetch` PoC: segmentierter Download (HTTP-Range-Splitting) über
-      2 Exits, plus Baseline-Messung (1-Exit vs. 2-Exit, gleiche Datei)
+- [ ] `sn-fetch` PoC über 2 echte Exits, plus Baseline-Messung
+      (1-Exit vs. 2-Exit, gleiche Datei)
 - [ ] Fair-Share-Scheduler v0: zwei gleichzeitige Downloads, faire Aufteilung
 - [ ] Doku: Messwerte, Erkenntnisse, Stolpersteine → hier in das Repo
 

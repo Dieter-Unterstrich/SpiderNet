@@ -1,7 +1,28 @@
-# SpiderNet-Node — Server/Software (Konzeptphase)
+# SpiderNet-Node — Server/Software
 
 Die Software, die aus "Nachbarschafts-LAN" ein gepooltes Bandbreitennetz
-macht. Sprache: **Rust**. Status: **Konzeptphase — noch nichts implementiert.**
+macht. Sprache: **Rust**.
+
+## Status
+
+**`sn-fetch` PoC v0 ist implementiert** (siehe `crates/sn-fetch/`):
+
+- Range-Probe (`HEAD` + 1-Byte-GET-Fallback) erkennt `Accept-Ranges`
+- Gewichteter Planner (Exits nach Kapazität, optionale Sub-Segmente pro
+  Exit, Mindest-Segmentgröße mit Merge-Fix, validated: lückenlose,
+  vollständige Abdeckung)
+- Parallele Segment-Downloads (Streaming, eigener reqwest-Client pro Exit)
+- Reassembly in Index-Reihenfolge + Streaming-SHA-256 + Längen-Check
+- Fallback: range-hostile Server werden als single-stream geladen
+- CLI: `sn-fetch <url> [-o out] [-e "1=2,2=1"] [-s n] [--sha256 hex] --probe-only`
+
+Verifiziert gegen einen echten Server (Debian-CD-Mirror, 756 MB, 8 Segmente,
+SHA-256 entspricht der offiziellen `SHA256SUMS`).
+
+**Noch nicht drin:** Multi-Exit-Routing über das Mesh (aktuell laufen alle
+Exits als lokale Verbindungen — die Struktur [`HttpExit`]-Trait,
+Exit-Registry] ist dafür schon bereit), Retry bei Segment-Fehlern,
+Progress-Anzeige während des Laufs.
 
 ## Haftungsausschluss (muss im Produkt sichtbar sein)
 
