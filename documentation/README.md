@@ -14,6 +14,7 @@ unabhängige SpiderNet-Instanzen geben; wir providen nur die Werkzeuge.
 - [[Idee]] — Die Kernidee und ein ehrlicher Realitätscheck
 - [[Architektur]] — Technische Architektur (Physik → Routing → Pooling → Inhalt)
 - [[Recht]] — Rechtslage in Deutschland (Störerhaftung, Abmahnrisiko, Verkabelung)
+- [[Splitting]] — Was sich über mehrere Exits splitten/verteilen lässt (und was nicht)
 - [[Lizenz]] — Lizenz-Optionen und Empfehlung
 - [[Roadmap]] — Phasenplan vom Pilot bis zum Nachbarschafts-Backbone
 - [[Server-README|Server-Konzept]] — geplante Software (`sn-node`, `sn-fetch`, …)

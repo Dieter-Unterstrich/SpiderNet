@@ -116,8 +116,15 @@ sequenceDiagram
 
 VPN-artiges Overlay: pro Gerät ein verschlüsselter Tunnel zu *einem*
 gewählten Exit, Exit-Wahl rotiert; Browsing/Video-Calls laufen über einen
-Exit, große Transfers über alle. Video-Calls werden explizit auf einen
-Exit gepinnt (kein Splitting).
+Exit, große Transfers über alle.
+
+- **Realzeitkritischer Traffic (Video-Calls, Gaming, SSH): Direct-Modus
+  als Default** — ohne Umweg, normal über den eigenen Router/Uplink, als
+  wäre SpiderNet nicht da. Optional "best single exit" mit Session-Sticky
+  (kein Mid-Call-Wechsel, siehe [[Splitting]]).
+
+Was sich splitten lässt und was die Quelle dafür mitbringen muss:
+siehe [[Splitting]].
 
 ### Fairness-Scheduler (`sn-fair`)
 

@@ -22,6 +22,7 @@ Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 | [[Idee]] | Kernidee + ehrlicher Realitätscheck |
 | [[Architektur]] | Schichten: Physik → Routing → Pooling → Freenet-Inhalte |
 | [[Recht]] | Deutsche Rechtslage + Pflichtregeln für die Software |
+| [[Splitting]] | Was sich splitten lässt: Ranges, Flow-Verteilung, Realtime |
 | [[Lizenz]] | Lizenz-Optionen (Code & Doku) |
 | [[Roadmap]] | Phasen: Pilot → MVP → Rollout → Freenet → Backbone |
 | [[Server-README|Server-Konzept]] | Software-Komponenten, Code-Standards |
@@ -38,7 +39,8 @@ Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 
 - [[Ethos]] §2 (Fairness/Leechen) ↔ [[Architektur]] (Leech-Modus, `sn-fair`)
 - [[Recht]] §5 (Pflichtregeln) ↔ [[Server-README]] (Haftungsausschluss)
-- [[Idee]] (Realitätscheck) ↔ [[Architektur]] (10G-Faser, `sn-fetch`)
+- [[Idee]] (Realitätscheck) ↔ [[Architektur]] (link-agnostische Physik, `sn-fetch`)
+- [[Splitting]] ↔ [[Architektur]] (Schicht 2) — was der Exit-Pool tatsächlich nutzen kann
 - [[Lizenz]] ↔ [[Ethos]] §6 (Transparenz) und `freenet-core` (AGPL)
 
 ## Außerhalb der Doku
