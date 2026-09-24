@@ -40,9 +40,28 @@ SHA-256 entspricht der offiziellen `SHA256SUMS`).
   TCP `localhost:9001` oder Unix-Socket) — Overlay-Adresse, Subnetz,
   Version, aktive Peer-Verbindungen
 
-**Noch nicht drin:** `sn-exit` (der Proxy-Dienst, der auf der Yggdrasil-
-Adresse lauscht und Segmente für Nachbarn holt), `sn-node`-Daemon (Supervisor,
-der yggdrasil + sn-exit + sn-fetch orchestriert), Fairness-Scheduler.
+**`sn-exit` v0 ist implementiert** (siehe `crates/sn-exit/`):
+
+- HTTP-Proxy-Dienst, der auf der Yggdrasil-Adresse des Haushalts lauscht
+  und Nachbar-Requests über den eigenen Uplink holt — Sharing ist opt-in
+  durch Starten des Dienstes, Stoppen ist der Kill-Switch
+- **Transparentes Byte-Relay:** absolute-URI-GETs (HTTP) und CONNECT-
+  Tunnel (HTTPS) werden unverändert weitergeleitet; TLS bleibt end-to-end
+  zwischen Neighbor-Client und Origin, Range-Header und Retries
+  funktionieren (Segmentierung bleibt Sache von `sn-fetch`)
+- **Quota pro Neighbor:** Bytes pro Zeitfenster (fixed window),
+  erschöpft → HTTP 503 mit `Retry-After`; Accounting auch bei abgebrochenen
+  Verbindungen (Counter-Wrapper, nicht Copy-Ergebnis)
+- **SSRF-Schutz:** Origins, die zu Loopback/Private/Link-Local/ULA/
+  Yggdrasil-Ranges auflösen, werden abgewiesen — Nachbarn können nicht in
+  Heim-LAN oder Admin-Sockets des Exit-Haushalts fetchen
+- Source-Allowlist: nur gelistete Neighbor-Adressen; ohne Liste nur
+  Loopback (Dev-Mode)
+- Verifiziert end-to-end: `sn-fetch` über einen laufenden `sn-exit`
+  lädt die Debian-ISO (756 MB, 4 Segmente, SHA-256 korrekt)
+
+**Noch nicht drin:** `sn-node`-Daemon (Supervisor, der yggdrasil + sn-exit
++ sn-fetch orchestriert), Fairness-Scheduler.
 
 Details zum Overlay: [[Overlay]].
 
@@ -75,7 +94,7 @@ Einplatinenrechner), der:
 | Crate/Binary | Zweck |
 |---|---|
 | `sn-node` | Node-Glue: Yggdrasil-Config (`genconf`), Overlay-Status (`status`), später Daemon/Supervisor |
-| `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy auf der Yggdrasil-Adresse (geplant) |
+| `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy auf der Yggdrasil-Adresse (v0: Byte-Relay + Quota + SSRF-Schutz) |
 | `sn-fetch` | Segmentierter Multi-Exit-Downloader (HTTP-API + CLI) |
 | `sn-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma, Leech-Modus) |
 | `sn-cache` | Transparenter Nachbarschafts-Cache (DNS-basiert) |

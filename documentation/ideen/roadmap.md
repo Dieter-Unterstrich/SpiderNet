@@ -25,7 +25,8 @@ Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
       Client (`status`) — die Overlay-Anbindung beginnt
 - [ ] Yggdrasil-Overlay zwischen 2 Haushalten (Kabel oder Kurzstrecke
       WLAN/60-GHz), `sn-node`-Daemon orchestriert den Node
-- [ ] `sn-exit` v0: HTTP-Proxy auf der Yggdrasil-Adresse (Kontingente)
+- [x] `sn-exit` v0: HTTP-Proxy auf der Yggdrasil-Adresse (Kontingente,
+      SSRF-Schutz, Kill-Switch = Prozess stoppen)
 - [ ] `sn-fetch` PoC über 2 echte Exits, plus Baseline-Messung
       (1-Exit vs. 2-Exit, gleiche Datei)
 - [ ] Fair-Share-Scheduler v0: zwei gleichzeitige Downloads, faire Aufteilung

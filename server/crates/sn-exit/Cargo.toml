@@ -1,0 +1,16 @@
+[package]
+name = "sn-exit"
+description = "SpiderNet exit service: quota-controlled uplink proxy for neighbors over the overlay"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+tokio = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+clap = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[lints]
+workspace = true

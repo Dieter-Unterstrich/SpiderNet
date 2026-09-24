@@ -28,10 +28,11 @@ ist — ohne Mehrkosten und mit besserer Versorgung schwacher Haushalte.
 
 ## Status
 
-Prototypphase (siehe [Roadmap]): `sn-fetch` (segmentierter Multi-Exit-
-Download mit Retry + Egress) und `sn-node` v0 (Yggdrasil-Config + Status)
-sind implementiert und getestet — Details in [`server/README.md`](../server/README.md).
-Nächster Meilenstein: `sn-exit` + Pilot mit 2–3 Haushalten.
+Prototypphase (siehe [[Roadmap]]): `sn-fetch` (segmentierter Multi-Exit-
+Download mit Retry + Egress), `sn-node` v0 (Yggdrasil-Config + Status)
+und `sn-exit` v0 (kontingentierter Uplink-Proxy mit SSRF-Schutz) sind
+implementiert und getestet — Details in [`server/README.md`](../server/README.md).
+Nächster Meilenstein: Pilot mit 2–3 Haushalten (echtes Overlay, Messwerte).
 
 ## Verwandte Projekte (Prior Art)
 

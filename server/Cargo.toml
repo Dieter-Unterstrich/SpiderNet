@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/sn-fetch", "crates/sn-node"]
+members = ["crates/sn-fetch", "crates/sn-node", "crates/sn-exit"]
 
 [workspace.package]
 version = "0.1.0"

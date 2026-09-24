@@ -25,7 +25,7 @@ Datensammlung, keine Bezahlung.
 | Ordner/Datei | Inhalt | Einstieg |
 |---|---|---|
 | `documentation/` | Idee, Ethos, Architektur, Rechtslage, Roadmap (Deutsch, Obsidian-freundlich mit `[[Wikilinks]]`; `documentation/Home.md` ist die Map of Content) | [README](documentation/README.md) |
-| `server/` | Die Software (Rust): `sn-fetch`, `sn-node`, geplant `sn-exit`, `sn-fair`, `sn-cache`, `sn-freenet` | [README](server/README.md) |
+| `server/` | Die Software (Rust): `sn-fetch`, `sn-node`, `sn-exit`; geplant `sn-fair`, `sn-cache`, `sn-freenet` | [README](server/README.md) |
 | `scripts/` | Repo-Setup (`bootstrap-gitea.sh`) | — |
 | `AGENTS.md` | Arbeitsanweisungen für Coding-Agents und Contributor:innen | [AGENTS.md](AGENTS.md) |
 | `LICENSE` | Code-Lizenz: AGPL-3.0-only | [LICENSE](LICENSE) |
@@ -50,8 +50,11 @@ Prototyp (Konzeptphase + erster Code):
   lokalen Proxy für Nachbar-Exits. Details: [server/README.md](server/README.md)
 - **`sn-node` v0** funktioniert: Yggdrasil-Config-Generierung (`genconf`)
   + Overlay-Status (`status` via Admin-Socket)
-- **Nächste Schritte:** `sn-exit` (kontingentierter Uplink-Proxy auf der
-  Yggdrasil-Adresse), Pilot mit 2–3 Haushalten — siehe
+- **`sn-exit` v0** funktioniert: kontingentierter Uplink-Proxy (Byte-Relay,
+  CONNECT-Tunnel für HTTPS, SSRF-Schutz, Source-Allowlist) — End-to-End
+  mit `sn-fetch` gegen einen echten Server verifiziert
+- **Nächste Schritte:** Pilot mit 2–3 Haushalten (Yggdrasil-Overlay
+  verkabeln, Messwerte), Fairness-Scheduler — siehe
   [Roadmap](documentation/ideen/roadmap.md)
 
 ## Doku lesen (Obsidian)
