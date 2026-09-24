@@ -12,6 +12,10 @@ dist/
 *.local.toml
 config/*.toml
 
+# Obsidian (personal vault config; re-add deliberately if you want the
+# theme/settings shared)
+documentation/.obsidian/
+
 # Logs & OS
 *.log
 .DS_Store
