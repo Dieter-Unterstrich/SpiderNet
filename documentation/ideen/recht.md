@@ -4,6 +4,23 @@
 > Quellen zusammengestellt. Für den Ernstfall: Anwält:in für Urheberrecht/
 > Telekommunikationsrecht fragen — im Kollektiv, nicht alleine.
 
+## Kontext: Software vs. Netz-Betreiber
+
+SpiderNet ist **nur die Software**. Jede Nachbarschaft richtet ihre eigene
+Instanz ein, betreibt sie und entscheidet selbst über Regeln, Topologie und
+Link-Typen. Für die Rechtslage heißt das eine klare Trennung:
+
+- **Software-Contributor:innen (dieses Repo):** liefern Werkzeuge, betreiben
+  kein Netz, kontrollieren keine Inhalte → tragen keine Verantwortung für
+  den Betrieb (Haftungsausschluss, siehe [[Server-README]]).
+- **Node-/Instanz-Betreiber:innen (die Nachbarschaft):** tragen die
+  Verantwortung für ihr eigenes Netz — Anschlusshaftung, Abmahnrisiko,
+  Verkabelung, Datenschutz vor Ort.
+
+Die Software muss den Betreiber:innen die Werkzeuge geben, um ihre
+Pflichten erfüllen zu können (Sperrbarkeit, minimale lokale Dokumentation,
+Kill-Switch).
+
 ## 1. Urheberrecht / Filesharing — das größte Risiko
 
 ### Wie die Rechtsprechung heute funktioniert

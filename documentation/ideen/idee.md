@@ -11,8 +11,10 @@
 
 Wichtiger Punkt (bewusst gehalten): Die Glasfaserverbindungen zwischen den
 Häusern laufen **neben** den normalen ISP-Anschlüssen — das Nachbarschaftsnetz
-ist ein *zweites*, schnelles (Ziel: 10 Gbit/s) lokales Netz, nicht ein Ersatz
-für die Internetanschlüsse.
+ist ein *zweites*, lokales Netz, nicht ein Ersatz für die Internetanschlüsse.
+Welche Link-Typen und -Geschwindigkeiten (10 Gbit, 1 Gbit, 1,6 Tbit, Funk)
+eingesetzt werden, entscheidet jede Nachbarschaft selbst — die Software ist
+**link-agnostisch**.
 
 Diese Idee ist gut — und sie ist nicht abstrakt: NYC Mesh läuft genau so
 ("members share their internet"), Freifunk und guifi.net zeigen es in
@@ -20,15 +22,20 @@ großem Maßstab. Was hier neu gedacht ist, ist der **konsequente Exit-Jede**
 statt Exit-Nirgends: Jeder Haushalt bleibt bei seinem ISP, aber Anfragen
 verlassen das Viertel an *allen* Punkten gleichzeitig.
 
+> SpiderNet ist **nur die Software**. Jede Nachbarschaft richtet ihre eigene
+> Instanz ein und entscheidet selbst, wie sie sie betreibt. Wir providen
+> Werkzeuge, kein Netz.
+
 ## Was technisch funktioniert
 
 1. **Segmentierte Downloads über mehrere Exits.** Große Dateien werden in
    Byte-Bereiche gesplittet (HTTP Range Requests) und parallel über die
    Internetanschlüsse mehrerer Haushalte geladen. Ein DSL-50000-Haushalt
    kann damit realistisch 5× herunterladen, wenn 4 Nachbarn mitspielen.
-   Das geht, weil die Haus-zu-Haus-Verbindungen selbst schnell sein
-   sollen (10 Gbit/s) — die Faser im Viertel ist nie der Engpass, die
-   Uplinks sind es.
+   Das geht, weil die Software die lokalen Links **misst** und daraus
+   ihre Splits und Pläne macht — egal ob 1 Gbit/s oder 10 Gbit/s im
+   Viertel liegt. Engpass sind immer die Uplinks, nie die lokalen Links
+   (die Software plant so, dass das lokale Netz nicht zum Flaschenhals wird).
 2. **Fair-Share-Scheduling.** Wer gerade nichts lädt, gibt seinen Anteil
    automatisch. Ein einzelner Stream profitiert von fremder Kapazität,
    mehrere Lade gleichzeitig bekommen faire Anteile.

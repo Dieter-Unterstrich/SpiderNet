@@ -30,21 +30,26 @@ Entscheidend:
    Exit (anders als klassische Community-Meshes mit einem Supernode), sondern
    viele — das verteilt nicht nur Last, sondern auch Risiko und Zensur-
    Angriffsfläche.
-2. **Die Glasfaserverbindungen sind ein *zweites* Netz neben den
-   Internetanschlüssen** und sollen schnell sein (10 Gbit/s per SFP+/
-   10G-Optik). Damit ist das Viertelnetz nie der Engpass — der Engpass sind
-   die Uplinks selbst, und genau die werden gepoolt.
+2. **Die lokalen Links sind ein *zweites* Netz neben den Internetanschlüssen.**
+   Typ und Geschwindigkeit (10 Gbit/s, 1 Gbit/s, 1,6 Tbit/s, Funk) sind Sache
+   der Nachbarschaft — die Software ist **link-agnostisch**: Sie misst die
+   Kapazität der vorhandenen Links und plant Splits/Scheduling auf Messwerten,
+   nicht auf Annahmen. Engpass sind die Uplinks; die lokalen Links werden so
+   geplant, dass sie nicht zum Flaschenhals werden.
 
-## Schicht 0 — Physik (Nachbarschaftsglasfaser, 10 Gbit/s)
+## Schicht 0 — Physik (lokale Verbindungen, link-agnostisch)
 
-- **Ziel:** 10 Gbit/s Haus-zu-Haus. Glasfaser (2-Faser-Duplex G.657A2, LC)
-  mit **10G-Optik (SFP+)** direkt im Node — langfristig günstiger und
-  zukunftssicher; 1G-Medienwandler sind die Budget-Fallback-Option.
-- **Pragmatisch für den Start:** was da ist — existierendes LAN-Kabel im
-  Mehrfamilienhaus (bis 100 m), Richtfunk 60-GHz-PTP (mehrere Gbit/s,
-  Sichtlinie nötig) als Überbrückung.
-- **Topologie:** anfangs Stern/Ring (2–5 Häuser), später vermascht. Jede
-  Faser ist ein separates Link; Redundanz schlägt Eleganz.
+Die Software macht keine Annahmen über die Physik — sie misst, was da ist.
+Beispiele, was eine Nachbarschaft einsetzen kann:
+
+- **Glasfaser Haus-zu-Haus** (2-Faser-Duplex G.657A2, LC, SFP/SFP+/QSFP+
+  je nach Wunsch-Geschwindigkeit — 1 G, 10 G, 100 G+)
+- **Existierendes LAN-Kabel** im Mehrfamilienhaus (bis 100 m)
+- **Richtfunk 60-GHz-PTP** (mehrere Gbit/s, Sichtlinie nötig)
+- **Normales WLAN/Ethernet**, was schon da ist — langsamer, aber null Aufwand
+
+Die Software plant mit dem, was existiert; mehr Kapazität ergibt automatisch
+mehr Pooling-Gewinn.
 
 ## Schicht 1 — Routing (Overlay über alle Haushalte)
 

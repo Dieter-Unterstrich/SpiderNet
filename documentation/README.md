@@ -3,6 +3,11 @@
 Ein Nachbarschaftsnetz aus Glasfaser, in dem sich alle Haushalte ihre
 Internetbandbreite teilen: **vom Internetanschluss zum Gemeingut.**
 
+SpiderNet ist **nur die Software** — jedes Viertel richtet seine eigene
+Instanz ein und entscheidet selbst, wie es sie betreibt (Topologie,
+Link-Typen und -Geschwindigkeiten, Regeln). Es kann beliebig viele
+unabhängige SpiderNet-Instanzen geben; wir providen nur die Werkzeuge.
+
 ## Inhaltsverzeichnis (Obsidian-Map of Content)
 
 - [[Ethos]] — Werte, Prinzipien und "Hausregeln" des Netzes

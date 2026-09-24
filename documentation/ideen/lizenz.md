@@ -1,13 +1,20 @@
-# Lizenz — Optionen und Empfehlung
+# Lizenz — Entscheidung
 
-Damit wir uns festlegen können. Stand: September 2026.
+**Entschieden (September 2026):**
 
-## Wichtigster Rahmen
-
-- Die Software wird **ohne jegliche Garantie** bereitgestellt — AGPL GPLv3-
- -artige Lizenzen enthalten §§ 15/16 (No Warranty, Limitation of Liability)
-  bereits; permissive Lizenzen brauchen das Disclaimer-Klauseln separat
-  (Apache-2.0 hat es eingebaut, MIT/BSD nur minimal).
+- **Code (`server/`): AGPL-3.0** — stärkstes Copyleft, §13-Netzwerk-Klausel
+  (wer SpiderNet-Software in einem Netz betreibt, muss den Quellcode
+  anbieten), gleiches Lizenz-Ökosystem wie `freenet-core`.
+- **Dokumentation (`documentation/`): CC-BY-SA-4.0** — Wissen wird geteilt
+  wie Bandbreite: Weitergabe und Bearbeitung frei, unter gleichen Bedingungen,
+  mit Namensnennung.
+- Kein Support, keine Garantie: AGPL §§ 15/16 (Code), CC-BY-SA Abs. 7
+  (keine Warranty-Klausel — der Haftungsausschluss steht zusätzlich in
+  README & Software).
+- Hintergrund: Die Software wird **ohne jegliche Garantie** bereitgestellt —
+  copyleft-Lizenzen enthalten §§ 15/16 (No Warranty, Limitation of Liability)
+  bereits; permissive Lizenzen brauchen Disclaimer-Klauseln separat
+  (Apache-2.0 hat sie eingebaut, MIT/BSD nur minimal).
 - Ethos: Code soll **Commons bleiben** — auch Forks sollen gezwungen sein,
   offen zu bleiben, sonst kann das Nachbarschaftsprojekt abgespaltet und
   geschlossen weiterverkauft werden.
@@ -24,9 +31,9 @@ Damit wir uns festlegen können. Stand: September 2026.
 | Apache-2.0 | keiner | nein | schlecht (ethisch) | Klon kann geschlossen werden — passt nicht zu "Gemeingut" |
 | MIT / BSD | keiner | nein | schlecht | identisches Risiko, minimaler Disclaimer |
 
-### Empfehlung
+### Empfehlung (entschieden)
 
-**AGPL-3.0 für alle Code-Crates in `server/`** (Status quo im Repo). Gründe:
+**AGPL-3.0 für alle Code-Crates in `server/`**. Gründe:
 
 1. Spiegelbild zum Ethos: das Netz ist Commons, der Code auch.
 2. **§13 verlangt Offenlegung bei Netzwerk-Nutzung** — unsere Software *ist*
@@ -49,14 +56,14 @@ Doku (dieses Verzeichnis) kann separat lizenziert werden:
 | CC0-1.0 | public-domain-artig | im Widerspruch zum Ethos |
 | gleich mit Code (AGPL) | geht auch, ist aber unüblich für Doku | n/a |
 
-### Empfehlung
+### Empfehlung (entschieden)
 
 **CC-BY-SA-4.0 für `documentation/`** — sauber getrennt vom Code, passt
 zum "Wissen wird geteilt wie Bandbreite"-Ethos (Ethos §7).
 
 ## Was noch offen bleibt
 
-- [ ] Entscheidung: Code AGPL-3.0 bestätigen
-- [ ] Entscheidung: Doku CC-BY-SA-4.0
-- [ ] `LICENSE`-Dateien: Code-`LICENSE` (AGPL, schon da) + `documentation/LICENSE` (CC-BY-SA) und Lizenz-Hinweis in jedem Dateikopf? (AGPL: Hinweis pro Crate reicht; Dateikopf optional)
+- [x] Entscheidung: Code AGPL-3.0 — bestätigt
+- [x] Entscheidung: Doku CC-BY-SA-4.0 — bestätigt
+- [x] `LICENSE`-Dateien: Code-`LICENSE` (AGPL) + `documentation/LICENSE` (CC-BY-SA)
 - [ ] Nebenlizenzen von Dependencies (cargo-deny, sobald Cargo-Projekt existiert)

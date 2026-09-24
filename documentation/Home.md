@@ -6,10 +6,13 @@
 
 ## Projekt
 
-**SpiderNet** — ein Nachbarschaftsnetz: Häuser werden per Glasfaser
-(neben den bestehenden Internetanschlüssen, Ziel 10 Gbit/s) direkt
-verbunden. Die Bandbreite aller Anschlüsse wird gepoolt, sodass jeder
-Haushalt vom gesamten Netz profitiert.
+**SpiderNet** ist **nur die Software** für ein Nachbarschaftsnetz: Häuser
+werden per Glasfaser (neben den bestehenden Internetanschlüssen) direkt
+verbunden — welcher Link-Typ und welche Geschwindigkeit, entscheidet jede
+Nachbarschaft selbst (10 Gbit, 1 Gbit, 1,6 Tbit, Funk — alles möglich).
+Die Bandbreite aller Anschlüsse wird gepoolt, sodass jeder Haushalt vom
+gesamten Netz profitiert. **Wir providen nur die Software**, jede
+Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 
 ## Navigation
 
