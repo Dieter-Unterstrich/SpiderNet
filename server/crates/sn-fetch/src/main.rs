@@ -15,7 +15,7 @@ use std::path::PathBuf;
 use clap::Parser;
 use sn_fetch::runner::{self, FetchOptions};
 use sn_fetch::types::{
-    ExitId, ExitWeight, MinSegmentBytes, SegmentsPerExit, Sha256Digest, TargetUrl,
+    Egress, ExitId, ExitWeight, MinSegmentBytes, SegmentsPerExit, Sha256Digest, TargetUrl,
 };
 
 #[derive(Debug, Parser)]
@@ -28,11 +28,19 @@ struct Args {
     #[arg(short, long)]
     output: Option<PathBuf>,
 
-    /// Exits as `id=weight` pairs, comma separated, e.g. `local=1,local2=2`.
-    /// `PoC`: all ids map to plain local connections; the weights only shape
-    /// the plan. Multi-exit routing comes with the mesh integration.
-    #[arg(short = 'e', long = "exit", default_value = "local=1")]
+    /// Exits as `id=weight` pairs, comma separated, e.g. `1=2,2=1`.
+    /// A proxy route turns an exit into a neighbor's uplink over the
+    /// mesh overlay: `id=weight@http://[ygg-addr]:8080`. Without a
+    /// proxy, the exit is this machine's own connection.
+    /// `PoC`: weights only shape the plan; a real proxy service
+    /// (`sn-exit`) comes with the mesh integration.
+    #[arg(short = 'e', long = "exit", default_value = "1=1")]
     exits: String,
+
+    /// Total tries per segment (initial try + retries; failed segments
+    /// are retried on a different exit when available).
+    #[arg(long, default_value_t = 3)]
+    max_attempts: u32,
 
     /// Parallel sub-segments per exit.
     #[arg(short = 's', long, default_value_t = 1)]
@@ -51,10 +59,10 @@ struct Args {
     probe_only: bool,
 }
 
-fn parse_exits(spec: &str) -> Result<Vec<(ExitId, ExitWeight)>, String> {
+fn parse_exits(spec: &str) -> Result<Vec<(ExitId, ExitWeight, Egress)>, String> {
     spec.split(',')
         .map(|pair| {
-            let (id, weight) = pair
+            let (id, rest) = pair
                 .split_once('=')
                 .ok_or_else(|| format!("invalid exit spec `{pair}`, expected `id=weight`"))?;
             let id = id
@@ -63,13 +71,21 @@ fn parse_exits(spec: &str) -> Result<Vec<(ExitId, ExitWeight)>, String> {
                 .ok()
                 .and_then(NonZeroU8::new)
                 .ok_or_else(|| format!("invalid exit id `{id}` (must be a non-zero number)"))?;
+            let (weight, egress) = match rest.split_once('@') {
+                Some((weight, proxy)) => {
+                    let egress = Egress::proxy(proxy.trim())
+                        .map_err(|err| format!("invalid proxy in exit spec `{pair}`: {err}"))?;
+                    (weight, egress)
+                }
+                None => (rest, Egress::Direct),
+            };
             let weight = weight
                 .trim()
                 .parse::<u32>()
                 .ok()
                 .and_then(NonZeroU32::new)
                 .ok_or_else(|| format!("invalid exit weight `{weight}` (must be non-zero)"))?;
-            Ok((ExitId::new(id), ExitWeight::new(weight)))
+            Ok((ExitId::new(id), ExitWeight::new(weight), egress))
         })
         .collect()
 }
@@ -131,6 +147,8 @@ async fn run() -> Result<(), String> {
         NonZeroU64::new(args.min_segment_mib.saturating_mul(1024 * 1024))
             .ok_or("min_segment_mib must be at least 1")?,
     );
+    let max_attempts =
+        NonZeroU32::new(args.max_attempts).ok_or("max_attempts must be at least 1")?;
 
     let expected = match &args.sha256 {
         Some(hex) => Some(Sha256Digest::from_hex(hex).map_err(|err| err.to_string())?),
@@ -146,9 +164,10 @@ async fn run() -> Result<(), String> {
         segments_per_exit: SegmentsPerExit::new(spe),
         min_segment,
         expected_sha256: expected,
+        retries: sn_fetch::exec::RetryPolicy::new(max_attempts),
     };
 
-    let registry = runner::local_registry(&exit_specs).map_err(|err| err.to_string())?;
+    let registry = runner::registry_from_specs(&exit_specs).map_err(|err| err.to_string())?;
     let parts_dir = std::env::temp_dir().join("sn-fetch-parts");
 
     let report = runner::run(&target, &options, &registry, &parts_dir)

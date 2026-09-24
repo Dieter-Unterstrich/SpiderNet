@@ -2,8 +2,8 @@
 
 use crate::error::FetchError;
 use crate::types::{
-    ByteRange, ExitId, ExitWeight, FileSize, MinSegmentBytes, SegmentIndex, SegmentsPerExit,
-    TargetUrl,
+    ByteRange, Egress, ExitId, ExitWeight, FileSize, MinSegmentBytes, SegmentIndex,
+    SegmentsPerExit, TargetUrl,
 };
 use std::num::NonZeroUsize;
 
@@ -23,8 +23,9 @@ pub struct FetchPlan {
     pub segments: Vec<SegmentPlan>,
 }
 
-/// Exits with their capacity weights.
-pub type ExitSpecs = Vec<(ExitId, ExitWeight)>;
+/// exit description, including how traffic leaves (`Direct` = own
+/// uplink, `Proxy` = a neighbor's exit over the mesh).
+pub type ExitSpecs = Vec<(ExitId, ExitWeight, Egress)>;
 
 impl FetchPlan {
     /// Build a validated plan.
@@ -56,12 +57,12 @@ impl FetchPlan {
             let weakest = exits
                 .iter()
                 .enumerate()
-                .min_by_key(|(_, (id, weight))| (weight.value(), std::cmp::Reverse(id.value())))
+                .min_by_key(|(_, (id, weight, _))| (weight.value(), std::cmp::Reverse(id.value())))
                 .map_or(0, |(pos, _)| pos);
             exits.remove(weakest);
         }
         // Deterministic boundary assignment order.
-        exits.sort_by_key(|(id, _)| *id);
+        exits.sort_by_key(|(id, _, _)| *id);
 
         // If even one segment per exit would be too small, reduce to one
         // segment per exit.
@@ -85,7 +86,7 @@ impl FetchPlan {
             // Weighted split across exits, then even sub-split per exit.
             let units: Vec<u128> = exits
                 .iter()
-                .map(|(_, w)| u128::from(w.value()) * spe.value() as u128)
+                .map(|(_, w, _)| u128::from(w.value()) * spe.value() as u128)
                 .collect();
             let total_units: u128 = units.iter().sum();
 

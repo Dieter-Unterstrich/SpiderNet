@@ -10,12 +10,13 @@ use sha2::Digest;
 use tokio::io::AsyncWriteExt;
 
 use crate::error::FetchError;
-use crate::exec::{self, FetchReport, SegmentStats};
-use crate::exit::{ExitRegistry, LocalExit};
+use crate::exec::{self, FetchReport, RetryPolicy, SegmentStats};
+use crate::exit::{ExitRegistry, HttpExit, LocalExit, MeshExit};
 use crate::plan::ExitSpecs;
 use crate::probe::{self, ProbeInfo};
+use crate::progress::ProgressSink;
 use crate::types::{
-    FileSize, MinSegmentBytes, RangeSupport, SegmentsPerExit, Sha256Digest, TargetUrl,
+    Egress, FileSize, MinSegmentBytes, RangeSupport, SegmentsPerExit, Sha256Digest, TargetUrl,
 };
 
 /// All knobs for one fetch.
@@ -26,6 +27,8 @@ pub struct FetchOptions {
     pub segments_per_exit: SegmentsPerExit,
     pub min_segment: MinSegmentBytes,
     pub expected_sha256: Option<Sha256Digest>,
+    /// How often a segment is retried (preferably on another exit).
+    pub retries: RetryPolicy,
 }
 
 /// Run a full fetch and produce a report.
@@ -74,7 +77,17 @@ async fn run_ranged(
     tracing::info!("plan: {} segment(s)", plan.segments.len());
 
     let started = Instant::now();
-    let segment_stats: Vec<SegmentStats> = exec::run_segments(&plan, exits, parts_dir).await?;
+    let segment_stats: Vec<SegmentStats> = exec::run_segments_with_policy(
+        &plan,
+        exits,
+        parts_dir,
+        &options.retries,
+        &ProgressSink::tracing_log(),
+    )
+    .await?
+    .into_iter()
+    .map(std::convert::From::from)
+    .collect();
     let digest = exec::assemble(
         parts_dir,
         &options.output,
@@ -105,7 +118,7 @@ async fn run_whole(
     let exit_id = options
         .exits
         .first()
-        .map(|(id, _)| *id)
+        .map(|(id, _, _)| *id)
         .ok_or_else(|| FetchError::InvalidPlan("no exits given".to_string()))?;
     let client = exits.get(exit_id)?.client().clone();
 
@@ -163,11 +176,18 @@ async fn run_whole(
     })
 }
 
-/// Convenience: build a registry with one [`LocalExit`] per spec id.
-pub fn local_registry(specs: &ExitSpecs) -> Result<ExitRegistry, FetchError> {
+/// Build a registry from exit specs: `Egress::Direct` exits connect
+/// locally (own uplink), `Egress::Proxy` exits route through the given
+/// proxy — typically a neighbor's exit service over the Yggdrasil
+/// overlay.
+pub fn registry_from_specs(specs: &ExitSpecs) -> Result<ExitRegistry, FetchError> {
     let mut registry = ExitRegistry::empty();
-    for (id, _) in specs {
-        registry.register(std::sync::Arc::new(LocalExit::new(*id)?));
+    for (id, _, egress) in specs {
+        let exit: std::sync::Arc<dyn HttpExit> = match egress {
+            Egress::Direct => std::sync::Arc::new(LocalExit::new(*id)?),
+            Egress::Proxy(url) => std::sync::Arc::new(MeshExit::new(*id, url.clone())?),
+        };
+        registry.register(exit);
     }
     Ok(registry)
 }

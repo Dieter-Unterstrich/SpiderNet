@@ -21,8 +21,8 @@ use sn_fetch::exit::LocalExit;
 use sn_fetch::plan::{ExitSpecs, FetchPlan};
 use sn_fetch::probe;
 use sn_fetch::types::{
-    ByteRange, ExitId, ExitWeight, FileSize, MinSegmentBytes, RangeSupport, SegmentsPerExit,
-    Sha256Digest,
+    ByteRange, Egress, ExitId, ExitWeight, FileSize, MinSegmentBytes, RangeSupport,
+    SegmentsPerExit, Sha256Digest,
 };
 
 fn exit_specs(n: u8) -> ExitSpecs {
@@ -31,6 +31,7 @@ fn exit_specs(n: u8) -> ExitSpecs {
             (
                 ExitId::new(NonZeroU8::new(i).expect("test ids are 1..=255")),
                 ExitWeight::new(NonZeroU32::new(1).expect("1 is non-zero")),
+                Egress::Direct,
             )
         })
         .collect()
@@ -68,7 +69,7 @@ async fn segmented_download_reassembles_and_hashes() {
     plan.validate().expect("plan validates");
 
     let mut registry = sn_fetch::exit::ExitRegistry::empty();
-    for id in specs.iter().map(|(id, _)| *id) {
+    for id in specs.iter().map(|(id, _, _)| *id) {
         registry.register(Arc::new(LocalExit::new(id).expect("local exit")));
     }
 
@@ -109,8 +110,9 @@ async fn range_hostile_server_falls_back_to_single_stream() {
         segments_per_exit: SegmentsPerExit::new(NonZeroUsize::new(1).expect("1 is non-zero")),
         min_segment: MinSegmentBytes::new(NonZeroU64::new(1024).expect("1024 is non-zero")),
         expected_sha256: None,
+        retries: sn_fetch::exec::RetryPolicy::default(),
     };
-    let registry = sn_fetch::runner::local_registry(&specs).expect("registry");
+    let registry = sn_fetch::runner::registry_from_specs(&specs).expect("registry");
     let parts = TempDir::new().expect("tempdir in test");
 
     let report = sn_fetch::runner::run(&target, &options, &registry, parts.path())
@@ -131,10 +133,12 @@ fn plan_is_contiguous_and_weighted() {
         (
             ExitId::new(NonZeroU8::new(1).expect("1 is non-zero")),
             ExitWeight::new(NonZeroU32::new(3).expect("3 is non-zero")),
+            Egress::Direct,
         ),
         (
             ExitId::new(NonZeroU8::new(2).expect("2 is non-zero")),
             ExitWeight::new(NonZeroU32::new(1).expect("1 is non-zero")),
+            Egress::Direct,
         ),
     ];
 

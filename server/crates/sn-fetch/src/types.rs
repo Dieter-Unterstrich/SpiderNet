@@ -230,3 +230,36 @@ pub enum RangeSupport {
     /// Probe was inconclusive; treat as unsupported (safe fallback).
     Unknown,
 }
+
+/// How a request physically leaves through an exit.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Egress {
+    /// The household's own uplink: plain outgoing HTTP, no detour.
+    Direct,
+    /// Through an HTTP proxy — e.g. a neighbor's exit service reachable
+    /// over the mesh overlay (typically bound to their Yggdrasil
+    /// address).
+    Proxy(reqwest::Url),
+}
+
+impl Egress {
+    /// Parse a proxy URL for [`Egress::Proxy`]; only `http`/`https`
+    /// upstreams are accepted.
+    pub fn proxy(input: &str) -> Result<Self, FetchError> {
+        let url =
+            reqwest::Url::parse(input).map_err(|_| FetchError::InvalidUrl(input.to_string()))?;
+        match url.scheme() {
+            "http" | "https" => Ok(Self::Proxy(url)),
+            _ => Err(FetchError::InvalidUrl(input.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for Egress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Direct => write!(f, "direct"),
+            Self::Proxy(url) => write!(f, "proxy:{url}"),
+        }
+    }
+}

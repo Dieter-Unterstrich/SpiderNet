@@ -48,6 +48,37 @@ impl HttpExit for LocalExit {
     }
 }
 
+/// A neighbor's uplink, reached through an HTTP proxy over the mesh.
+/// The proxy is expected to listen on the neighbor's Yggdrasil address,
+/// so the transport between the households is encrypted end-to-end by
+/// the overlay.
+#[derive(Debug)]
+pub struct MeshExit {
+    id: ExitId,
+    client: reqwest::Client,
+}
+
+impl MeshExit {
+    pub fn new(id: ExitId, proxy: reqwest::Url) -> Result<Self, FetchError> {
+        let proxy = reqwest::Proxy::all(proxy)?;
+        let client = reqwest::Client::builder()
+            .connect_timeout(Duration::from_secs(30))
+            .proxy(proxy)
+            .build()?;
+        Ok(Self { id, client })
+    }
+}
+
+impl HttpExit for MeshExit {
+    fn id(&self) -> ExitId {
+        self.id
+    }
+
+    fn client(&self) -> &reqwest::Client {
+        &self.client
+    }
+}
+
 /// All exits available for a fetch, keyed by id.
 #[derive(Default, Clone)]
 pub struct ExitRegistry {
