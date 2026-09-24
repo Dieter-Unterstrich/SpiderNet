@@ -25,7 +25,7 @@ Datensammlung, keine Bezahlung.
 | Ordner/Datei | Inhalt | Einstieg |
 |---|---|---|
 | `documentation/` | Idee, Ethos, Architektur, Rechtslage, Roadmap (Deutsch, Obsidian-freundlich mit `[[Wikilinks]]`; `documentation/Home.md` ist die Map of Content) | [README](documentation/README.md) |
-| `server/` | Die Software (Rust): `sn-fetch`, `sn-node`, `sn-exit`; geplant `sn-fair`, `sn-cache`, `sn-freenet` | [README](server/README.md) |
+| `server/` | Die Software (Rust): `sn-fetch`, `sn-node`, `sn-exit`, `sn-fair`; geplant `sn-cache`, `sn-freenet` | [README](server/README.md) |
 | `scripts/` | Repo-Setup (`bootstrap-gitea.sh`) | — |
 | `AGENTS.md` | Arbeitsanweisungen für Coding-Agents und Contributor:innen | [AGENTS.md](AGENTS.md) |
 | `LICENSE` | Code-Lizenz: AGPL-3.0-only | [LICENSE](LICENSE) |
@@ -53,8 +53,11 @@ Prototyp (Konzeptphase + erster Code):
 - **`sn-exit` v0** funktioniert: kontingentierter Uplink-Proxy (Byte-Relay,
   CONNECT-Tunnel für HTTPS, SSRF-Schutz, Source-Allowlist) — End-to-End
   mit `sn-fetch` gegen einen echten Server verifiziert
+- **`sn-fair` v0** funktioniert: Fairness-Engine (gewichtetes Max-Min,
+  Leech-Politik) + Demo-CLI — die Soll-Aufteilung für den Piloten
 - **Nächste Schritte:** Pilot mit 2–3 Haushalten (Yggdrasil-Overlay
-  verkabeln, Messwerte), Fairness-Scheduler — siehe
+  verkabeln, Messwerte — Handbuch:
+  [pilot.md](documentation/ideen/pilot.md)), `sn-node`-Daemon — siehe
   [Roadmap](documentation/ideen/roadmap.md)
 
 ## Doku lesen (Obsidian)

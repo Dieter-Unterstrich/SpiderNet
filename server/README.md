@@ -60,10 +60,26 @@ SHA-256 entspricht der offiziellen `SHA256SUMS`).
 - Verifiziert end-to-end: `sn-fetch` über einen laufenden `sn-exit`
   lädt die Debian-ISO (756 MB, 4 Segmente, SHA-256 korrekt)
 
-**Noch nicht drin:** `sn-node`-Daemon (Supervisor, der yggdrasil + sn-exit
-+ sn-fetch orchestriert), Fairness-Scheduler.
+**`sn-fair` v0 ist implementiert** (siehe `crates/sn-fair/`):
 
-Details zum Overlay: [[Overlay]].
+- Gewichtetes Max-Min-Fairness-Engine (zwei Klassen): **Contributors**
+  (Haushalte mit Exit-Angebot, konfigurierbares Gewicht) teilen sich
+  die Gesamtkapazität nach Max-Min-Fairness; **Leeches** (Empfang ohne
+  Beitrag, ausdrücklich legitim) bekommen die Restkapazität — bei
+  Sättigung zuerst gedrosselt, nie ausgeschlossen
+- Deterministische, overflow-sichere Berechnung (u128-Arithmetik,
+  Restverteilung in ID-Ordnung), validierte Newtypes
+  (`ParticipantId`, `Weight`, `Rate`, `Capacity`)
+- Demo-CLI in Mbit/s für den Piloten: Soll-Aufteilung simulieren und
+  gegen die gemessene Ist-Aufteilung halten (siehe [[Pilot]], M4)
+- Runtime-Integration in `sn-fetch` (echte gleichzeitige Downloads
+  drosseln) ist Phase 2, siehe [[Roadmap]]
+
+**Noch nicht drin:** `sn-node`-Daemon (Supervisor, der yggdrasil +
+sn-exit + sn-fetch orchestriert), Freenet-Integration, Cache.
+
+Details zum Overlay: [[Overlay]]. Pilot-Handbuch mit Messprotokoll:
+[[Pilot]].
 
 ## Haftungsausschluss (muss im Produkt sichtbar sein)
 
@@ -96,7 +112,7 @@ Einplatinenrechner), der:
 | `sn-node` | Node-Glue: Yggdrasil-Config (`genconf`), Overlay-Status (`status`), später Daemon/Supervisor |
 | `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy auf der Yggdrasil-Adresse (v0: Byte-Relay + Quota + SSRF-Schutz) |
 | `sn-fetch` | Segmentierter Multi-Exit-Downloader (HTTP-API + CLI) |
-| `sn-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma, Leech-Modus) |
+| `sn-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma, Leech-Modus) — v0: zwei-Klassen-Max-Min-Engine + Demo-CLI |
 | `sn-cache` | Transparenter Nachbarschafts-Cache (DNS-basiert) |
 | `sn-freenet` | Integration von `freenet-core` (Contracts für Nachbarschafts-Inhalte) |
 

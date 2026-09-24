@@ -26,6 +26,7 @@ Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 | [[Splitting]] | Was sich splitten lässt: Ranges, Flow-Verteilung, Realtime |
 | [[Lizenz]] | Lizenz-Optionen (Code & Doku) |
 | [[Roadmap]] | Phasen: Pilot → MVP → Rollout → Freenet → Backbone |
+| [[Pilot]] | Pilot-Handbuch: 2 Haushalte verkabeln, messen, dokumentieren |
 | [[Server-README|Server-Konzept]] | Software-Komponenten, Code-Standards |
 
 ## Lesereihenfolge zum Einstieg
@@ -44,6 +45,8 @@ Nachbarschaft betreibt ihre eigene Instanz nach eigenen Regeln.
 - [[Splitting]] ↔ [[Architektur]] (Schicht 2) — was der Exit-Pool tatsächlich nutzen kann
 - [[Overlay]] ↔ [[Architektur]] (Schicht 1) — Routing-Entscheidung und deren Grenzen
 - [[Overlay]] ↔ [[Server-README]] — `sn-node` generiert die Yggdrasil-Config, `sn-fetch` nutzt `Egress::Proxy`
+- [[Pilot]] ↔ [[Roadmap]] (Phase 1) und [[Overlay]] §Deployment — der Pilot ist der erste Real-Test
+- [[Pilot]] §M4 ↔ [[Architektur]] §Fairness-Scheduler — `sn-fair` berechnet die Soll-Aufteilung
 - [[Lizenz]] ↔ [[Ethos]] §6 (Transparenz) und `freenet-core` (AGPL)
 
 ## Außerhalb der Doku

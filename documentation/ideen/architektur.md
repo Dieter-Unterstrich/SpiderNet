@@ -133,6 +133,11 @@ siehe [[Splitting]].
 - Exit-Kontingente (Volumenlimit, Wartungszeit) werden respektiert
 - Leech-Nodes: niedrigste Priorität bei Knappheit, nie ausgeschlossen
 
+Status: **v0 implementiert** — gewichtetes Max-Min in zwei Klassen:
+Contributors teilen die volle Kapazität nach Max-Min, Leeches teilen
+die Restkapazität (bei Sättigung zuerst gedrosselt, nie ausgeschlossen).
+Details in `server/README.md`; Soll-Ist-Vergleich im Piloten: [[Pilot]] §M4.
+
 ### Nachbarschafts-Cache (`sn-cache`)
 
 - Transparenter Shared-Cache (lancache-Prinzip): große, populäre Objekte

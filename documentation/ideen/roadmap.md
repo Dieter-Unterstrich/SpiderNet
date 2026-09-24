@@ -14,6 +14,7 @@ endet mit etwas, das man benutzen kann.
 ## Phase 1 — Pilot (2–3 Haushalte)
 
 Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
+Handbuch mit Messprotokoll: [[Pilot]].
 
 - [x] `sn-fetch` PoC (lokal): Range-Probe, gewichteter Planner, parallele
       Segment-Downloads, Reassembly + SHA-256 — verifiziert gegen einen
@@ -27,10 +28,12 @@ Ziel: Beweis, dass Pooling über zwei Anschlüsse real funktioniert.
       WLAN/60-GHz), `sn-node`-Daemon orchestriert den Node
 - [x] `sn-exit` v0: HTTP-Proxy auf der Yggdrasil-Adresse (Kontingente,
       SSRF-Schutz, Kill-Switch = Prozess stoppen)
+- [x] `sn-fair` v0: Fairness-Engine (gewichtetes Max-Min über zwei
+      Klassen, Leech-Politik) + Demo-CLI; Runtime-Integration in
+      `sn-fetch` ist Phase 2
 - [ ] `sn-fetch` PoC über 2 echte Exits, plus Baseline-Messung
-      (1-Exit vs. 2-Exit, gleiche Datei)
-- [ ] Fair-Share-Scheduler v0: zwei gleichzeitige Downloads, faire Aufteilung
-- [ ] Doku: Messwerte, Erkenntnisse, Stolpersteine → hier in das Repo
+      (1-Exit vs. 2-Exit, gleiche Datei — Protokoll in [[Pilot]])
+- [ ] Doku: Messwerte, Erkenntnisse, Stolpersteine → in [[Pilot]] §Ergebnisse
 
 ## Phase 2 — MVP-Software
 

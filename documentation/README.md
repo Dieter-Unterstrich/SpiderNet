@@ -17,6 +17,7 @@ unabhängige SpiderNet-Instanzen geben; wir providen nur die Werkzeuge.
 - [[Splitting]] — Was sich über mehrere Exits splitten/verteilen lässt (und was nicht)
 - [[Lizenz]] — Lizenz-Optionen und Empfehlung
 - [[Roadmap]] — Phasenplan vom Pilot bis zum Nachbarschafts-Backbone
+- [[Pilot]] — Pilot-Handbuch: Schritt-für-Schritt + Messprotokoll (Phase 1)
 - [[Server-README|Server-Konzept]] — geplante Software (`sn-node`, `sn-fetch`, …)
 
 ## Die Idee in einem Satz
@@ -29,10 +30,11 @@ ist — ohne Mehrkosten und mit besserer Versorgung schwacher Haushalte.
 ## Status
 
 Prototypphase (siehe [[Roadmap]]): `sn-fetch` (segmentierter Multi-Exit-
-Download mit Retry + Egress), `sn-node` v0 (Yggdrasil-Config + Status)
-und `sn-exit` v0 (kontingentierter Uplink-Proxy mit SSRF-Schutz) sind
-implementiert und getestet — Details in [`server/README.md`](../server/README.md).
-Nächster Meilenstein: Pilot mit 2–3 Haushalten (echtes Overlay, Messwerte).
+Download mit Retry + Egress), `sn-node` v0 (Yggdrasil-Config + Status),
+`sn-exit` v0 (kontingentierter Uplink-Proxy mit SSRF-Schutz) und `sn-fair`
+v0 (Fairness-Engine + Demo-CLI) sind implementiert und getestet —
+Details in [`server/README.md`](../server/README.md). Nächster
+Meilenstein: Pilot mit 2–3 Haushalten (Handbuch: [[Pilot]]).
 
 ## Verwandte Projekte (Prior Art)
 
