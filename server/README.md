@@ -75,8 +75,40 @@ SHA-256 entspricht der offiziellen `SHA256SUMS`).
 - Runtime-Integration in `sn-fetch` (echte gleichzeitige Downloads
   drosseln) ist Phase 2, siehe [[Roadmap]]
 
-**Noch nicht drin:** `sn-node`-Daemon (Supervisor, der yggdrasil +
-sn-exit + sn-fetch orchestriert), Freenet-Integration, Cache.
+**`sn-node` Daemon v1 ist implementiert** (`sn-node daemon`, siehe
+`crates/sn-node/src/daemon.rs`):
+
+- **Ein Befehl pro Haushalt:** `sn-node daemon --config node.toml`
+  orchestriert den Node — Yggdrasil-Sidecar (generierte Config +
+  persistenter Node-Key im `state_dir`, Identität bleibt über Neustarts
+  stabil: `PrivateKeyPath` hat Vorrang vor dem eingebetteten Key, siehe
+  [Config-Referenz](https://yggdrasil-network.github.io/configurationref.html))
+  + optional den in-process `sn-exit`-Dienst
+- **TOML-Konfiguration, validiert beim Laden** (`deny_unknown_fields`,
+  wiederverwendete validierte Typen; `sn-node daemon --check` prüft
+  ohne Start — für Packaging/Ops)
+- **Leech-Modus per Konfig** (`[exit] enabled = false`): Overlay läuft,
+  kein Exit-Angebot; enabled + leere Allowlist = Start verweigert
+  (Ausnahme: Loopback-Dev-Bind)
+- **Kill-Switch-Semantik:** SIGINT/SIGTERM → Accept-Loop stoppt,
+  Sidecar bekommt SIGTERM (5 s Gnade, dann SIGKILL); stirbt Yggdrasil
+  unerwartet, fährt der Daemon mit Fehler herunter (Supervisor-Pflicht)
+- Getestet mit Fake-Yggdrasil (Script-Binary) und Fake-Admin-Socket:
+  Key-Persistenz, Exit-Bind, Shutdown, Sidecar-Tod
+
+**Deployment: Docker & Nix** (siehe `server/docker/README.md` und
+`flake.nix`):
+
+- `server/docker/`: Multi-Stage-Image (alle 4 Binaries + Yggdrasil
+  v0.5.14, SHA-256-verifiziert), Compose-Beispiel pro Haushalt
+  (`network_mode: host`, `NET_ADMIN`, `/dev/net/tun`, `init: true`) —
+  Image gebaut und geraucht-getestet
+- `flake.nix`: `nix build` baut das Workspace als ein Paket
+  (+ experimentelles NixOS-Modul) — **nicht lokal verifiziert**
+  (Nix nicht installiert), Feedback willkommen
+
+**Noch nicht drin:** Freenet-Integration, Cache, Metriken/Onboarding
+(Phase 2).
 
 Details zum Overlay: [[Overlay]]. Pilot-Handbuch mit Messprotokoll:
 [[Pilot]].
@@ -109,7 +141,7 @@ Einplatinenrechner), der:
 
 | Crate/Binary | Zweck |
 |---|---|
-| `sn-node` | Node-Glue: Yggdrasil-Config (`genconf`), Overlay-Status (`status`), später Daemon/Supervisor |
+| `sn-node` | Node-Glue: Yggdrasil-Config (`genconf`), Overlay-Status (`status`), Node-Daemon (`daemon`: Sidecar + Exit-Orchestrierung) |
 | `sn-exit` | Exit-Dienst: kontingentierter Uplink-Proxy auf der Yggdrasil-Adresse (v0: Byte-Relay + Quota + SSRF-Schutz) |
 | `sn-fetch` | Segmentierter Multi-Exit-Downloader (HTTP-API + CLI) |
 | `sn-fair` | Fairness-Scheduler (max-min, Exit-Kontingente, Karma, Leech-Modus) — v0: zwei-Klassen-Max-Min-Engine + Demo-CLI |

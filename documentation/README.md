@@ -30,11 +30,13 @@ ist — ohne Mehrkosten und mit besserer Versorgung schwacher Haushalte.
 ## Status
 
 Prototypphase (siehe [[Roadmap]]): `sn-fetch` (segmentierter Multi-Exit-
-Download mit Retry + Egress), `sn-node` v0 (Yggdrasil-Config + Status),
-`sn-exit` v0 (kontingentierter Uplink-Proxy mit SSRF-Schutz) und `sn-fair`
-v0 (Fairness-Engine + Demo-CLI) sind implementiert und getestet —
-Details in [`server/README.md`](../server/README.md). Nächster
-Meilenstein: Pilot mit 2–3 Haushalten (Handbuch: [[Pilot]]).
+Download mit Retry + Egress), `sn-node` v0 + Daemon (Yggdrasil-Config,
+Status, Sidecar-/Exit-Orchestrierung), `sn-exit` v0 (kontingentierter
+Uplink-Proxy mit SSRF-Schutz) und `sn-fair` v0 (Fairness-Engine +
+Demo-CLI) sind implementiert und getestet — Details in
+[`server/README.md`](../server/README.md), Deployment via Docker/Nix
+(`server/docker/`, `flake.nix`). Nächster Meilenstein: Pilot mit
+2–3 Haushalten (Handbuch: [[Pilot]]).
 
 ## Verwandte Projekte (Prior Art)
 

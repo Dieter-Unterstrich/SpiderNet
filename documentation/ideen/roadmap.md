@@ -24,8 +24,11 @@ Handbuch mit Messprotokoll: [[Pilot]].
       end-to-end getestet
 - [x] `sn-node` v0: Yggdrasil-Config-Generierung (`genconf`) + Admin-Socket-
       Client (`status`) — die Overlay-Anbindung beginnt
+- [x] `sn-node` Daemon v1: ein Befehl orchestriert Yggdrasil-Sidecar +
+      Exit-Dienst (TOML-Konfig, Node-Key-Persistenz, Kill-Switch-,
+      Supervisor-Semantik) — Deployment via Docker/Nix vorhanden
 - [ ] Yggdrasil-Overlay zwischen 2 Haushalten (Kabel oder Kurzstrecke
-      WLAN/60-GHz), `sn-node`-Daemon orchestriert den Node
+      WLAN/60-GHz) aufsetzen
 - [x] `sn-exit` v0: HTTP-Proxy auf der Yggdrasil-Adresse (Kontingente,
       SSRF-Schutz, Kill-Switch = Prozess stoppen)
 - [x] `sn-fair` v0: Fairness-Engine (gewichtetes Max-Min über zwei

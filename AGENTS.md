@@ -42,7 +42,9 @@ Das Projekt besteht aus zwei Hälften:
 - Kernfeatures: Multi-Exit-Bandbreiten-Pooling, segmentierte Downloads,
   Fairness-Scheduler, Nachbarschafts-Cache, **Leech-Modus** (Empfangen ohne
   Exit-Bereitstellung ist ausdrücklich erlaubt — Netz unter Nachbarn)
-- Status: Konzeptphase, Details in `server/README.md`
+- Status: Code existiert und ist getestet (`sn-fetch`, `sn-node` inkl.
+  Daemon, `sn-exit`, `sn-fair`; Deployment via Docker/Nix) — Details in
+  `server/README.md`
 
 ## Git / Gitea
 

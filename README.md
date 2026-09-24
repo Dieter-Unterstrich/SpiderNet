@@ -55,9 +55,14 @@ Prototyp (Konzeptphase + erster Code):
   mit `sn-fetch` gegen einen echten Server verifiziert
 - **`sn-fair` v0** funktioniert: Fairness-Engine (gewichtetes Max-Min,
   Leech-Politik) + Demo-CLI — die Soll-Aufteilung für den Piloten
+- **`sn-node` Daemon** funktioniert: ein Befehl orchestriert Yggdrasil-
+  Sidecar + Exit-Dienst (`sn-node daemon --config node.toml`, TOML-Konfig,
+  Kill-Switch-Semantik)
+- **Deployment:** Docker-Image (gebaut + getestet) und Nix-Flake
+  (unverifiziert) — Details in [server/README.md](server/README.md)
 - **Nächste Schritte:** Pilot mit 2–3 Haushalten (Yggdrasil-Overlay
   verkabeln, Messwerte — Handbuch:
-  [pilot.md](documentation/ideen/pilot.md)), `sn-node`-Daemon — siehe
+  [pilot.md](documentation/ideen/pilot.md)) — siehe
   [Roadmap](documentation/ideen/roadmap.md)
 
 ## Doku lesen (Obsidian)

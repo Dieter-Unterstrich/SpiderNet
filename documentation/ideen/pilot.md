@@ -51,6 +51,14 @@ cargo build --release --workspace
 # → target/release/sn-node, sn-exit, sn-fetch, sn-fair
 ```
 
+Alternativ (bequemer ab dem zweiten Haushalt): **Docker** —
+`server/docker/README.md` (Image mit allen Binaries + Yggdrasil,
+Compose-Beispiel) — oder **Nix** via `flake.nix`. Der Node-Daemon
+(`sn-node daemon --config node.toml`, siehe `server/README.md`)
+orchestriert Overlay + Exit in einem Befehl; die manuellen Schritte
+unten zeigen trotzdem erst den Geräteweg, damit man sieht, was
+gepoolt wird.
+
 ### Vor dem Termin (Checkliste)
 
 - [ ] ISP-AGB der Teilnehmenden geprüft (Weitergabe an Dritte,
