@@ -47,4 +47,12 @@ pub enum FetchError {
 
     #[error("invalid sha256 hex string")]
     InvalidDigest,
+
+    #[error("segment {index}: all {attempts} attempt(s) failed; last error: {last_error}")]
+    SegmentAttemptsExhausted {
+        index: SegmentIndex,
+        attempts: u32,
+        #[source]
+        last_error: Box<FetchError>,
+    },
 }

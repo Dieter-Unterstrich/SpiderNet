@@ -18,5 +18,6 @@ pub mod exec;
 pub mod exit;
 pub mod plan;
 pub mod probe;
+pub mod progress;
 pub mod runner;
 pub mod types;
