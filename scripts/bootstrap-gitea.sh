@@ -68,10 +68,17 @@ case "$STATUS" in
     409) echo "Repository already exists - continuing." ;;
     401) echo "ERROR: authentication failed (HTTP 401). Is 2FA enabled or password wrong? A token may be needed." >&2; exit 1 ;;
     403) echo "ERROR: forbidden (HTTP 403)." >&2; exit 1 ;;
-    *)   echo "ERROR: unexpected HTTP status $STATUS" >&2; sed -e 's/[^-]*-/x-/g' "$RESP_FILE" >/dev/null 2>&1; cat "$RESP_FILE" >&2; exit 1 ;;
+    *)   echo "ERROR: unexpected HTTP status $STATUS" >&2; cat "$RESP_FILE" >&2; exit 1 ;;
 esac
 
-REMOTE_URL="https://$HOST/$GITEA_USER/$REPO_NAME.git"
+# The git-credentials username may be an email; the repo URL needs the
+# actual Gitea account name. Resolve it via the /user endpoint.
+OWNER=$(curl -s -u "$GITEA_USER:$GITEA_PASS" "https://$HOST/api/v1/user" \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin)["login"])')
+
+echo "Resolved Gitea owner: $OWNER"
+
+REMOTE_URL="https://$HOST/$OWNER/$REPO_NAME.git"
 
 cd "$(dirname "$0")/.."
 
