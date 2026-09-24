@@ -6,6 +6,7 @@
 //! the exit only sees which host is contacted and how many bytes flow.
 
 use std::collections::HashMap;
+use std::future::Future;
 use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -128,17 +129,38 @@ fn roll_window(
 
 /// Accept loop. Runs until the listener errors fatally.
 pub async fn serve(config: ExitConfig, listener: TcpListener) -> Result<(), ExitError> {
+    serve_until(config, listener, std::future::pending()).await
+}
+
+/// Like [`serve`], but stops accepting when `shutdown` completes (used
+/// by the node daemon for kill-switch semantics). Connections already
+/// accepted keep running in the background; the caller or process exit
+/// owns them.
+pub async fn serve_until(
+    config: ExitConfig,
+    listener: TcpListener,
+    shutdown: impl Future<Output = ()>,
+) -> Result<(), ExitError> {
     let config = Arc::new(config);
     let ledger = Arc::new(QuotaLedger::new());
+    tokio::pin!(shutdown);
     loop {
-        let (stream, peer) = listener.accept().await?;
-        let config = Arc::clone(&config);
-        let ledger = Arc::clone(&ledger);
-        tokio::spawn(async move {
-            if let Err(error) = handle_connection(stream, peer.ip(), config, ledger).await {
-                tracing::debug!(%peer, "connection ended: {error}");
+        tokio::select! {
+            () = &mut shutdown => {
+                tracing::info!("exit: accept loop stopped (shutdown)");
+                return Ok(());
             }
-        });
+            accepted = listener.accept() => {
+                let (stream, peer) = accepted?;
+                let config = Arc::clone(&config);
+                let ledger = Arc::clone(&ledger);
+                tokio::spawn(async move {
+                    if let Err(error) = handle_connection(stream, peer.ip(), config, ledger).await {
+                        tracing::debug!(%peer, "connection ended: {error}");
+                    }
+                });
+            }
+        }
     }
 }
 

@@ -8,9 +8,9 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use clap::{Parser, Subcommand};
-use sn_node::config::{
-    self, IfName, ListenUri, MulticastMode, NodeSettings, PeerUri, PublicKeyHex,
-};
+use sn_node::config::{self, ListenUri, MulticastMode, NodeSettings, PeerUri, PublicKeyHex};
+use sn_node::daemon::{self, NO_WARRANTY_BANNER};
+use sn_node::daemon_config;
 use sn_node::yggdrasil::{self, AdminEndpoint};
 
 #[derive(Debug, Parser)]
@@ -77,15 +77,17 @@ enum Command {
         #[arg(long, default_value_t = 3)]
         timeout_secs: u64,
     },
-}
+    /// Run the node daemon: supervise the Yggdrasil sidecar and the
+    /// optional in-process exit service. Stops on SIGINT/SIGTERM.
+    Daemon {
+        /// Path to the TOML config file.
+        #[arg(long, default_value = "node.toml")]
+        config: PathBuf,
 
-fn parse_ifname(input: &str) -> Result<IfName, String> {
-    match input.trim() {
-        "auto" => Ok(IfName::Auto),
-        "none" => Ok(IfName::Headless),
-        name if !name.is_empty() => Ok(IfName::Named(name.to_string())),
-        _ => Err("--ifname must be `auto`, `none` or an interface name".to_string()),
-    }
+        /// Validate the config and exit without starting anything.
+        #[arg(long)]
+        check: bool,
+    },
 }
 
 fn parse_uris<T>(
@@ -139,6 +141,7 @@ async fn run() -> Result<(), String> {
             admin,
             timeout_secs,
         } => run_status(&admin, timeout_secs).await,
+        Command::Daemon { config, check } => run_daemon_command(&config, check).await,
     }
 }
 
@@ -161,7 +164,7 @@ async fn run_genconf(
         .iter()
         .map(|key| PublicKeyHex::parse(key).map_err(|err| err.to_string()))
         .collect::<Result<Vec<_>, String>>()?;
-    let if_name = parse_ifname(&ifname)?;
+    let if_name = config::parse_ifname(&ifname).map_err(|err| err.to_string())?;
 
     let settings = NodeSettings {
         peers,
@@ -226,4 +229,42 @@ async fn run_status(admin: &str, timeout_secs: u64) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+async fn run_daemon_command(config_path: &std::path::Path, check: bool) -> Result<(), String> {
+    println!("{NO_WARRANTY_BANNER}");
+
+    let validated = daemon_config::load(config_path).map_err(|err| err.to_string())?;
+    if check {
+        println!("config ok");
+        return Ok(());
+    }
+
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+        )
+        .init();
+
+    daemon::run_daemon(validated, shutdown_signal())
+        .await
+        .map_err(|err| err.to_string())
+}
+
+/// Future that resolves when SIGINT or SIGTERM (unix) arrives.
+async fn shutdown_signal() {
+    #[cfg(unix)]
+    {
+        if let Ok(mut sigterm) =
+            tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+        {
+            tokio::select! {
+                _ = tokio::signal::ctrl_c() => {}
+                _ = sigterm.recv() => {}
+            }
+            return;
+        }
+    }
+    tokio::signal::ctrl_c().await.ok();
 }

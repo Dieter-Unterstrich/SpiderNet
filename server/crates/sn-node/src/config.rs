@@ -239,6 +239,17 @@ pub fn write_config(path: &Path, json: &str) -> Result<(), NodeError> {
     Ok(())
 }
 
+/// Parse a TUN interface setting: `auto`, `none` (headless router-only)
+/// or an explicit interface name.
+pub fn parse_ifname(input: &str) -> Result<IfName, NodeError> {
+    match input.trim() {
+        "auto" => Ok(IfName::Auto),
+        "none" => Ok(IfName::Headless),
+        name if !name.is_empty() => Ok(IfName::Named(name.to_string())),
+        _ => Err(NodeError::InvalidIfName(input.to_string())),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used, clippy::expect_used)]

@@ -10,6 +10,9 @@
 //! - [`yggdrasil`]: client for the Yggdrasil admin socket (JSON over
 //!   TCP/unix, default `localhost:9001`) to query node status (`getSelf`,
 //!   `getPeers`).
+//! - [`daemon_config`]: the validated TOML config of the node daemon.
+//! - [`daemon`]: the node daemon — supervises the yggdrasil sidecar and
+//!   runs the optional `sn-exit` exit service in-process.
 //!
 //! Yggdrasil provides encrypted end-to-end routing between households.
 //! It is **not** an anonymity network, and `SpiderNet` never claims to
@@ -24,5 +27,7 @@
 #![allow(clippy::must_use_candidate, clippy::missing_errors_doc)]
 
 pub mod config;
+pub mod daemon;
+pub mod daemon_config;
 pub mod error;
 pub mod yggdrasil;

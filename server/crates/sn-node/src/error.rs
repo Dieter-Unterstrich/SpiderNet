@@ -31,4 +31,25 @@ pub enum NodeError {
 
     #[error("admin socket operation timed out")]
     Timeout,
+
+    #[error("invalid daemon config: {0}")]
+    DaemonConfig(String),
+
+    #[error("overlay did not come up within {timeout_secs}s (admin endpoint {endpoint})")]
+    OverlayNotUp { endpoint: String, timeout_secs: u64 },
+
+    #[error("yggdrasil sidecar exited unexpectedly: {0}")]
+    SidecarExited(String),
+
+    #[error("exit service cannot listen on {addr}: {source}")]
+    ExitListen {
+        addr: std::net::SocketAddr,
+        source: std::io::Error,
+    },
+
+    #[error("exit service error: {0}")]
+    Exit(#[from] sn_exit::error::ExitError),
+
+    #[error("invalid interface name `{0}`: expected `auto`, `none` or an interface name")]
+    InvalidIfName(String),
 }
