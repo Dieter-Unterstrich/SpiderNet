@@ -24,6 +24,13 @@ Das Projekt besteht aus zwei Hälften:
 - Code-Lizenz: AGPL-3.0 (passt zum Ethos; `freenet-core` ist ebenfalls AGPL-3.0)
 - Keine Secrets ins Repo (Passwörter, Token, private IP-Listen realer Nachbarn)
 - Persönliche Daten von Nachbarn (Namen, Adressen) bleiben außerhalb des Repos
+- **Keine Garantie:** Die Software wird ohne jegliche Garantie bereitgestellt
+  (AGPL §§ 15/16) und muss überall prominent so gekennzeichnet sein — Nutzung
+  auf eigene Verantwortung der Nutzer:innen, wir übernehmen keine Haftung
+  für die Verwendung.
+- **Maximale Type-Safety in Rust** (Details in `server/README.md`): kein
+  `unsafe` (`#![forbid(unsafe_code)]`), Newtypes statt roher Primitive,
+  exhaustive Enums/Match, keine `unwrap()`/`expect()` in nicht-Test-Code.
 
 ## Server (geplant)
 
@@ -33,7 +40,8 @@ Das Projekt besteht aus zwei Hälften:
   und Apps. Wichtig: Freenet bietet **keine Anonymität** (klar im
   [FAQ](https://freenet.org/about/faq/) benannt) — nicht damit werben.
 - Kernfeatures: Multi-Exit-Bandbreiten-Pooling, segmentierte Downloads,
-  Fairness-Scheduler, Nachbarschafts-Cache
+  Fairness-Scheduler, Nachbarschafts-Cache, **Leech-Modus** (Empfangen ohne
+  Exit-Bereitstellung ist ausdrücklich erlaubt — Netz unter Nachbarn)
 - Status: Konzeptphase, Details in `server/README.md`
 
 ## Git / Gitea

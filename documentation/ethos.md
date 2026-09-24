@@ -17,8 +17,14 @@ der Fairness-Scheduler (siehe Architektur) ist unsere Währung.
 Jeder Haushalt bekommt standardmäßig einen gleichberechtigten, fairen Anteil
 (max-min Fairness). Stärkere Anschlüsse teilen freiwillig — genau das ist der
 "anarcho-kommunistische" Kern: voneinander abhängig, freiwillig, ohne Zwang
-und ohne Markt. Dauernutzung ohne Gegenleistung wird fair gedealt (Gespräch,
-Karma, Drosselung als letztes Mittel) — nicht bestraft.
+und ohne Markt.
+
+**Leechen ist erlaubt.** Wer nichts beiträgt (kein Exit, kein Cache,
+keine Faser), darf trotzdem empfangen — Nachbarschaftskultur ist Nachsicht,
+nicht Gegenleistungszwang. Der Scheduler behandelt "Leeched" als niedrigste
+Priorität bei Knappheit, aber nie als Strafe. Es gibt keine Bezahlung und
+keine Pflicht zum Mitmachen; Andenken an Fairness ist Sache des Viertels,
+nicht der Software.
 
 ## 3. Freiwilligkeit und Do-ocracy
 

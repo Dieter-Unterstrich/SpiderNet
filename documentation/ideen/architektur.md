@@ -61,6 +61,19 @@ Jeder Haushalt bietet seinem Node an, wie viel Uplink er "spendiert"
 (Kontingent, standardmäßig fair-share). Der Exit-Pool ist die aggregierte
 Kapazität. Exit ist **opt-in pro Haushalt und jederzeit widerruflich**.
 
+### Leech-Modus
+
+Wer seinen Uplink nicht teilen will (oder kann), schaltet Sharing einfach
+aus und läuft im **Leech-Modus**: rein empfangen, nichts beitragen. Das ist
+ausdrücklich legitim — "Netz unter Nachbarn" heißt Nachsicht, nicht
+Gegenseitigkeitszwang. Technisch gilt:
+
+- Leeched Nodes bekommen im Fairness-Scheduler die niedrigste (aber
+  weiterhin faire) Priorität, wenn Kapazität knapp ist.
+- Bei Überlast wird Leeched-Nodes zuerst gedrosselt, ohne sie auszuschließen.
+- Der Status ist sichtbar (Karma/Anzeige), aber es gibt keine Strafe und
+  keine Zwangsfreischaltung.
+
 ### Segmentierter Multi-Exit-Download (`aki-fetch`)
 
 ```mermaid

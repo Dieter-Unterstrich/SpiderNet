@@ -85,7 +85,12 @@
 
 Damit Agents und Developer das im Code umsetzen:
 
-1. Exit ist opt-in, dokumentiert und jederzeit widerrufbar.
+0. **Haftungsausschluss ist Pflicht:** Die Software wird ohne jegliche
+   Garantie ausgeliefert (AGPL §§ 15/16); README, Startup-Banner und UI
+   weisen klar darauf hin, dass wir keine Verantwortung für die Verwendung
+   übernehmen und Inhalte in der Verantwortung der Nutzer:innen liegen.
+1. Exit ist opt-in, dokumentiert und jederzeit widerrufbar (Leech-Modus
+   ist immer möglich).
 2. Node kann einzelne Teilnehmer/Segmente sperren (Sperrpflicht-Umsetzung).
 3. Logs: minimal, lokal, keine Inhaltslogs.
 4. Keine Funktion, deren alleiniger Zweck das Verstecken von Rechtsbrüchen ist.

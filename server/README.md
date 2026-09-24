@@ -3,6 +3,18 @@
 Die Software, die aus "Nachbarschafts-LAN" ein gepooltes Bandbreitennetz
 macht. Sprache: **Rust**. Status: **Konzeptphase — noch nichts implementiert.**
 
+## Haftungsausschluss (muss im Produkt sichtbar sein)
+
+> **KEINE GARANTIE.** Diese Software wird "as is" ohne jegliche Garantie
+> bereitgestellt (AGPL §§ 15/16). Die Betreiber und Contributor:innen dieses
+> Projekts übernehmen **keinerlei Verantwortung oder Haftung** dafür, wozu
+> Nutzer:innen die Software verwenden oder welche Inhalte über sie übertragen
+> werden. Die Verantwortung für gesendete und empfangene Inhalte liegt
+> vollständig bei den Nutzer:innen.
+
+Dieser Hinweis muss prominent sichtbar sein: im README, im Startup-Banner
+des Daemons und in der Weboberfläche.
+
 ## Zielbild
 
 Pro Haushalt läuft ein AKI-Node (Mini-PC oder Einplatinenrechner), der:
@@ -42,7 +54,38 @@ Kleinster brauchbarer Schnitt:
 - Keine Bezahl-/Krypto-Infrastruktur (Kontrast: Althea)
 - Keine Anonymitätsversprechen (Freenet selbst bietet keine; wir auch nicht)
 - Kein Zentralserver, keine zentrale Datensammlung
-- Kein "Piracy as a Feature" (siehe `documentation/ideen/recht.md`)
+- Keine inhaltliche Kontrolle oder Zensur durch die Software selbst —
+  die Software transportiert Dateien/Webseiten aller Art; was übertragen
+  wird, liegt in der Verantwortung der Nutzer:innen (Haftungsausschluss oben)
+
+## Code-Standards: maximale Type-Safety in Rust
+
+Der Code soll so sicher sein, dass ganze Fehlerklassen schon beim Kompilieren
+unmöglich werden. Verbindliche Regeln für jede Crate in `server/`:
+
+1. **`#![forbid(unsafe_code)]`** in jedem Crate-Root (und `unwrap`,
+   `expect` nur in `#[cfg(test)]`-Kontext).
+2. **Newtypes statt roher Primitive** für alles, was Bedeutung hat:
+   `struct NodeId(NonZeroU64)`, `struct BytesPerSecond(u64)`,
+   `struct SegmentIndex(u32)`, `struct ExitQuotaBytes(…)` — keine nackten
+   `u64`/`String` in Domänen-Typen.
+3. **Exhaustive Enums statt Strings/Bool-Flags** für Zustände (z. B.
+   `enum ExitState { OptedIn(Quota), Leeching, Suspended }`),
+   `match` ohne `_`-Arm, damit Compiler-Checks beim Erweitern greifen.
+4. **Typestate-Pattern** für Protokoll-/Lebenszyklus-Zustände (z. B.
+   `Download<Started>` → `Download<Split>` → `Download<Assembled>`),
+   damit illegale Zustandsübergänge nicht kompilieren.
+5. **`TryFrom`/`TryInto` statt stiller Konvertierung**, keine panicking
+   Operationen in nicht-Test-Code; Fehler via `thiserror`-Enums, Bubble-up
+   statt Logging-and-continue.
+6. **Parsed-data-is-validated:** unsichere Eingaben (Konfig, Netzwerk) werden
+   direkt beim Einlesen in validierte Typen transformiert; danach trägt der
+   Typ die Invariante (z. B. `struct ValidatedConfig(ConfigInner)` statt
+   `Config` mit Optionals).
+7. **Keine globalen `Mutex`/`static mut`**; Shared State explizit als
+   Besitz-/Kanal-Struktur (`tokio::sync` primitives mit bewusster Wahl).
+8. `deny(clippy::all, clippy::pedantic)`-basierte CI-Checks, sobald
+   Code existiert; `cargo-deny` für Dependencies.
 
 ## Technologiestack (Vorschlag)
 
