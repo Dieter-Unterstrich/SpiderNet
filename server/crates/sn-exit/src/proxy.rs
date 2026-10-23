@@ -7,7 +7,7 @@
 
 use std::collections::HashMap;
 use std::future::Future;
-use std::net::IpAddr;
+use std::net::{IpAddr, SocketAddr};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -195,14 +195,18 @@ async fn handle_connection(
         neighbor.write_all(RESP_BAD_REQUEST).await.ok();
         return Err(ExitError::Protocol("unparseable request head"));
     };
-    ensure_origin_is_public(&head, config.origin_policy()).await?;
+    // Resolve once and check every candidate here; connect_origin then
+    // connects to exactly these addresses. A second, independent
+    // resolution at connect time would allow DNS rebinding to smuggle
+    // a non-public origin past the check (TOCTOU, issue #1).
+    let origin_addrs = resolve_public_origin(&head, config.origin_policy()).await?;
 
     // 4. Ack tunnels, then relay — verbatim, both directions.
     if head.target == RequestTarget::Tunnel {
         neighbor.write_all(RESP_TUNNEL_OK).await?;
     }
 
-    let origin = connect_origin(&head).await?;
+    let origin = connect_origin(&origin_addrs).await?;
 
     // Counted relay: byte counters live in the wrappers, so traffic is
     // accounted even when the connection errors or is aborted midway.
@@ -326,36 +330,36 @@ async fn read_head(stream: &mut TcpStream) -> Result<Vec<u8>, ExitError> {
     }
 }
 
-/// DNS resolution happens here so the blocklist sees the *resolved* IPs,
-/// not just the hostname the neighbor typed.
-async fn ensure_origin_is_public(
+/// Resolve the origin once so the blocklist sees the *resolved* IPs,
+/// not just the hostname the neighbor typed — and return exactly those
+/// checked addresses for [`connect_origin`]. Connecting by hostname
+/// again would re-resolve independently and open a DNS-rebinding window
+/// between check and connect (issue #1).
+async fn resolve_public_origin(
     head: &parse::RequestHead,
     policy: OriginPolicy,
-) -> Result<(), ExitError> {
-    if policy == OriginPolicy::AnyForTesting {
-        return Ok(());
-    }
-    let resolved: Vec<std::net::SocketAddr> =
-        tokio::net::lookup_host((head.host.as_str(), head.port))
-            .await?
-            .collect();
+) -> Result<Vec<SocketAddr>, ExitError> {
+    let resolved: Vec<SocketAddr> = tokio::net::lookup_host((head.host.as_str(), head.port))
+        .await?
+        .collect();
     if resolved.is_empty() {
         return Err(ExitError::Protocol("origin could not be resolved"));
     }
-    for addr in resolved {
-        if !is_public_origin(addr.ip()) {
-            return Err(ExitError::Protocol("origin is not a public address"));
+    if policy != OriginPolicy::AnyForTesting {
+        for addr in &resolved {
+            if !is_public_origin(addr.ip()) {
+                return Err(ExitError::Protocol("origin is not a public address"));
+            }
         }
     }
-    Ok(())
+    Ok(resolved)
 }
 
-async fn connect_origin(head: &parse::RequestHead) -> Result<TcpStream, ExitError> {
-    let stream = tokio::time::timeout(
-        HANDSHAKE_TIMEOUT,
-        TcpStream::connect((head.host.as_str(), head.port)),
-    )
-    .await
-    .map_err(|_| ExitError::Io(std::io::ErrorKind::TimedOut.into()))??;
+/// Connect to the origin using only the addresses that passed
+/// [`resolve_public_origin`] — never re-resolve the hostname here.
+async fn connect_origin(addrs: &[SocketAddr]) -> Result<TcpStream, ExitError> {
+    let stream = tokio::time::timeout(HANDSHAKE_TIMEOUT, TcpStream::connect(addrs))
+        .await
+        .map_err(|_| ExitError::Io(std::io::ErrorKind::TimedOut.into()))??;
     Ok(stream)
 }
