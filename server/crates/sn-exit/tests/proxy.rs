@@ -262,6 +262,34 @@ async fn origin_form_request_gets_400() {
 }
 
 #[tokio::test]
+async fn public_only_policy_refuses_loopback_origin() {
+    // Default policy (PublicOnly): a loopback origin must be refused
+    // before any connection is relayed (SSRF protection, issue #1).
+    let config = ExitConfig::new(
+        SocketAddr::new(IpAddr::V6(Ipv6Addr::LOCALHOST), 0),
+        SourceAllowlist::loopback_only(),
+        None,
+    );
+    let exit = spawn_exit(config).await;
+
+    let mut neighbor = TcpStream::connect(exit).await.unwrap();
+    neighbor
+        .write_all(b"GET http://127.0.0.1:9/x HTTP/1.1\r\nHost: o\r\n\r\n")
+        .await
+        .unwrap();
+    // The exit closes the connection without relaying; no 200 may
+    // ever arrive from the refused origin.
+    let mut buffer = Vec::new();
+    let _ = tokio::time::timeout(Duration::from_secs(5), neighbor.read_to_end(&mut buffer))
+        .await
+        .expect("no hang on refused origin");
+    assert!(
+        !buffer.starts_with(b"HTTP/1.1 200"),
+        "loopback origin must not be relayed under PublicOnly"
+    );
+}
+
+#[tokio::test]
 async fn oversized_head_gets_no_hang_and_no_panic() {
     let exit = spawn_exit(dev_config(None)).await;
     let mut neighbor = TcpStream::connect(exit).await.unwrap();
